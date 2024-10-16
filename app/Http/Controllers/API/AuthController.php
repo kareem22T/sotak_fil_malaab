@@ -108,7 +108,9 @@ class AuthController extends Controller
 
         $user->update($request->only(['name', 'phone']));
         if ($request->hasFile('photo')) {
-            $user->update(['photo' => $request->file('photo')->store('photos')]);
+            $user->update([
+                'photo' => $request->file('photo') ? $request->file('photo')->store('photos', 'public') : null,
+            ]);
         }
 
         // Get the full path of the photo
