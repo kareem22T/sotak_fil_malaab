@@ -81,6 +81,7 @@ class ApplicationController extends Controller
     {
         $query = Application::query();
 
+
         if ($request->has('sort')) {
             if ($request->sort === 'most_rated') {
                 $query->withCount('rates')->orderBy('rates_count', 'desc');
@@ -90,13 +91,37 @@ class ApplicationController extends Controller
         }
 
         $applications = $query->paginate(20);
+        $applicationsWithAvgRate = $applications->getCollection()->map(function ($application) {
+            return [
+                'id' => $application->id,
+                'name' => $application->name,
+                'dob' => $application->dob,
+                'gender' => $application->gender,
+                'phone' => $application->phone,
+                'email' => $application->email,
+                'governoment' => $application->governoment,
+                'educational_qualification' => $application->educational_qualification,
+                'languages' => $application->languages,
+                'accept_terms' => $application->accept_terms,
+                'video' => $application->video,  // This will return the full URL
+                'avg_rate' => $application->rates->avg('rate'), // Include rates and the users who rated
+                'admin_rate' => $application->admin_rate,
+                'user' => $application->user, // Include user information
+                'rates' => $application->rates, // Include rates and the users who rated
+                'created_at' => $application->created_at,
+                'updated_at' => $application->updated_at,
+            ];
+        });
 
-        return response()->json(['applications' => $applications, 'notes' => ['Applications fetched successfully']], 200);
+        // Replace the collection of the paginated result with the modified collection
+        $paginatedApplications = $applications->setCollection($applicationsWithAvgRate);
+
+        return response()->json(['applications' => $paginatedApplications, 'notes' => ['Applications fetched successfully']], 200);
     }
     public function getApplication($id)
     {
         // Check if the application exists, along with its relationships (rates and user)
-        $application = Application::with(['rates.user', 'user'])->find($id);
+        $application = Application::with(['rates.user', 'user',])->find($id);
 
         // If the application doesn't exist, return a 404 response
         if (!$application) {
@@ -119,6 +144,7 @@ class ApplicationController extends Controller
                 'admin_rate' => $application->admin_rate,
                 'user' => $application->user, // Include user information
                 'rates' => $application->rates, // Include rates and the users who rated
+                'avg_rate' => $application->rates->avg('rate'), // Include rates and the users who rated
                 'created_at' => $application->created_at,
                 'updated_at' => $application->updated_at,
             ],

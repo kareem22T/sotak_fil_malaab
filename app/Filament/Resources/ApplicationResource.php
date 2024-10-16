@@ -12,6 +12,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -54,6 +55,7 @@ class ApplicationResource extends Resource
                 TextColumn::make('email')->sortable()->searchable(),
                 TextColumn::make('gender')->sortable()->searchable(),
                 TextColumn::make('admin_rate')->sortable(),
+                TextColumn::make('rates_avg_rate')->label('Users avg rates')->avg('rates', 'rate'),
                 TextColumn::make('created_at')->sortable()->searchable(),
             ])
             ->filters([
