@@ -21,7 +21,8 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors(), 'notes' => ['Invalid data']], 400);
+            $firstError = $validator->errors()->first();
+            return response()->json(['status' => false, 'msg' => $firstError, 'data' => null, 'notes' => ['Invalid data']], 400);
         }
 
         $user = User::create([
@@ -41,8 +42,9 @@ class AuthController extends Controller
             $user->photo = $photoUrl;
         }
 
-        return response()->json(['user' => $user, 'notes' => ['User registered successfully']], 201);
+        return response()->json(['status' => true, 'msg' => 'User registered successfully', 'data' => ['user' => $user], 'notes' => ['User registered successfully']], 201);
     }
+
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -51,14 +53,14 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors(), 'notes' => ['Invalid data']], 400);
+            $firstError = $validator->errors()->first();
+            return response()->json(['status' => false, 'msg' => $firstError, 'data' => null, 'notes' => ['Invalid data']], 400);
         }
-
 
         $credentials = $request->only('email', 'password');
 
         if (!auth()->attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized', 'notes' => ['Invalid credentials']], 401);
+            return response()->json(['status' => false, 'msg' => 'Invalid credentials', 'data' => null, 'notes' => ['Invalid credentials']], 401);
         }
 
         $user = User::where("email", $request->email)->first();
@@ -73,7 +75,7 @@ class AuthController extends Controller
 
         $token = $user->createToken('token')->plainTextToken;
 
-        return response()->json(['token' => $token, 'user' => $user, 'notes' => ['Login successful']], 200);
+        return response()->json(['status' => true, 'msg' => 'Login successful', 'data' => ['token' => $token, 'user' => $user], 'notes' => ['Login successful']], 200);
     }
 
     public function profile(Request $request)
@@ -88,8 +90,7 @@ class AuthController extends Controller
             $user->photo = $photoUrl;
         }
 
-
-        return response()->json(['user' => $user, 'notes' => ['User profile fetched']], 200);
+        return response()->json(['status' => true, 'msg' => 'User profile fetched', 'data' => ['user' => $user], 'notes' => ['User profile fetched']], 200);
     }
 
     public function updateProfile(Request $request)
@@ -103,7 +104,8 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors(), 'notes' => ['Invalid data']], 400);
+            $firstError = $validator->errors()->first();
+            return response()->json(['status' => false, 'msg' => $firstError, 'data' => null, 'notes' => ['Invalid data']], 400);
         }
 
         $user->update($request->only(['name', 'phone']));
@@ -122,6 +124,6 @@ class AuthController extends Controller
             $user->photo = $photoUrl;
         }
 
-        return response()->json(['user' => $user, 'notes' => ['Profile updated successfully']], 200);
+        return response()->json(['status' => true, 'msg' => 'Profile updated successfully', 'data' => ['user' => $user], 'notes' => ['Profile updated successfully']], 200);
     }
 }
