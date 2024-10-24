@@ -30,8 +30,12 @@ class AuthController extends Controller
             'email' => $request->email,
             'phone' => $request->phone,
             'password' => Hash::make($request->password),
-            'photo' => $request->file('photo') ? $request->file('photo')->store('photos', 'public') : null,
         ]);
+
+        if ($request->photo)
+            $user->update([
+                'photo' => $request->file('photo') ? $request->file('photo')->store('photos', 'public') : null,
+            ]);
 
         // Get the full path of the photo
         $photoPath = $user->photo;
