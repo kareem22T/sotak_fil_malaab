@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Models\Application;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Sample;
 use Illuminate\Support\Facades\Validator;
 
 class ApplicationController extends Controller
@@ -22,6 +23,7 @@ class ApplicationController extends Controller
             'languages' => 'required',
             'accept_terms' => 'required|boolean',
             'video' => 'required',
+            'video_2' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -45,12 +47,22 @@ class ApplicationController extends Controller
                 'languages' => json_encode($request->languages),
                 'accept_terms' => $request->accept_terms,
                 'video' => $request->file('video')->store('applications', 'public'),
+                'video_2' => $request->file('video_2')->store('applications', 'public'),
             ]);
         } else {
             return response()->json(['status' => false, 'msg' => 'Application already exists', 'notes' => ['Application already exists']], 400);
         }
 
         return response()->json(['status' => true, 'msg' => 'Application posted successfully', 'data' => ['application' => $application], 'notes' => ['Application posted successfully']], 201);
+    }
+
+    public function getSamples() {
+        $sample = Sample::first();
+        $data = [
+            "video_1" => $sample?->path,
+            "video_2" => $sample?->path_2,
+        ];
+        return response()->json(['status' => true, 'msg' => 'Application posted successfully', 'data' => $data, 'notes' => ['samples got']], 201);
     }
 
     public function rateApplication(Request $request, Application $application)
@@ -104,6 +116,7 @@ class ApplicationController extends Controller
                 'languages' => $application->languages,
                 'accept_terms' => $application->accept_terms,
                 'video' => $application->video,
+                'video_2' => $application->video_2,
                 'avg_rate' => $application->rates->avg('rate'),
                 'admin_rate' => $application->admin_rate,
                 'user' => $application->user,
@@ -142,6 +155,7 @@ class ApplicationController extends Controller
                     'languages' => $application->languages,
                     'accept_terms' => $application->accept_terms,
                     'video' => $application->video,
+                    'video_2' => $application->video_2,
                     'admin_rate' => $application->admin_rate,
                     'user' => $application->user,
                     'rates' => $application->rates,

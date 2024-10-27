@@ -12,6 +12,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('get-application/{application}', [ApplicationController::class, 'getApplication']);
 });
 
+Route::get('samples', [ApplicationController::class, 'getSamples']);
+
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
 

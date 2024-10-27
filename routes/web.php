@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DownloadController;
+use App\Http\Controllers\SampleController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -19,3 +20,5 @@ Route::get('/unauthorized', function () {
 });
 
 Route::get('applications/{application}/video/download', [DownloadController::class, 'downloadVideo'])->name('application.video.download');
+
+Route::post('/sample', [SampleController::class, 'updateOrCreate'])->name('sample.updateOrCreate');

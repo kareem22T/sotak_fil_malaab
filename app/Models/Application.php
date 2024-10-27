@@ -21,6 +21,7 @@ class Application extends Model
         'languages',
         'accept_terms',
         'video',
+        'video_2',
         'admin_rate',
     ];
 
@@ -33,6 +34,12 @@ class Application extends Model
     {
         return asset('storage/' . $value);
     }
+
+    public function getVideo2Attribute($value)
+    {
+        return asset('storage/' . $value);
+    }
+
     /**
      * Get the user that owns the application.
      */
