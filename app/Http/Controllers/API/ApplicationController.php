@@ -111,7 +111,7 @@ class ApplicationController extends Controller
                 'name' => $application->name,
                 'video1' => $application->video,
                 'video2' => $application->video_2,
-                'image' => asset('storage/' . $application->user->photo),
+                'image' => !empty($application->user->photo) ? asset('storage/' . $application->user->photo) : null,
                 'rate' => $application->rates->avg('rate'),
             ];
         });
