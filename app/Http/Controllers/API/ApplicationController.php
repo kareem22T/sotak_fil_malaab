@@ -94,6 +94,8 @@ class ApplicationController extends Controller
     {
         $query = Application::query();
 
+        $query->with('user');
+
         if ($request->has('sort')) {
             if ($request->sort === 'most_rated') {
                 $query->withCount('rates')->orderBy('rates_count', 'desc');
@@ -107,22 +109,10 @@ class ApplicationController extends Controller
             return [
                 'id' => $application->id,
                 'name' => $application->name,
-                'dob' => $application->dob,
-                'gender' => $application->gender,
-                'phone' => $application->phone,
-                'email' => $application->email,
-                'governoment' => $application->governoment,
-                'educational_qualification' => $application->educational_qualification,
-                'languages' => $application->languages,
-                'accept_terms' => $application->accept_terms,
-                'video' => $application->video,
-                'video_2' => $application->video_2,
-                'avg_rate' => $application->rates->avg('rate'),
-                'admin_rate' => $application->admin_rate,
-                'user' => $application->user,
-                'rates' => $application->rates,
-                'created_at' => $application->created_at,
-                'updated_at' => $application->updated_at,
+                'video1' => $application->video,
+                'video2' => $application->video_2,
+                'image' => $application->user->photo,
+                'rate' => $application->rates->avg('rate'),
             ];
         });
 
