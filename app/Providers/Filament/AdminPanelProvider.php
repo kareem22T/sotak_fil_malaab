@@ -53,6 +53,9 @@ class AdminPanelProvider extends PanelProvider
             ->authGuard('admin')
             ->authMiddleware([
                 Authenticate::class,
+            ])
+            ->plugins([
+                \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make()
             ]);
     }
 }
