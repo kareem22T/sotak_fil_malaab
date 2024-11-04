@@ -79,6 +79,7 @@ class ApplicationResource extends Resource
                 TextColumn::make('email')->sortable()->searchable(),
                 TextColumn::make('gender')->sortable()->searchable(),
                 TextColumn::make('admin_rate')->sortable(),
+                TextColumn::make('admin.name')->label('Reviewed by')->sortable(),
                 TextColumn::make('total_rates')->label('Total points')->getStateUsing(function ( $record) {
                     return $record->rates->sum('rate');
                 }),
