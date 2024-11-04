@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class Application extends Model
 {
@@ -27,6 +28,17 @@ class Application extends Model
         'is_approved',
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::updating(function ($application) {
+            // Set admin_id to the current authenticated admin's ID if not set
+            if (is_null($application->admin_id)) {
+                $application->admin_id = Auth::id();
+            }
+        });
+    }
     // The languages field will be automatically cast to an array
     protected $casts = [
         'languages' => 'array',
