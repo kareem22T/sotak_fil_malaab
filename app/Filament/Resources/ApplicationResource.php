@@ -17,6 +17,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 
 class ApplicationResource extends Resource
 {
@@ -32,12 +33,20 @@ class ApplicationResource extends Resource
                 FileUpload::make('video_1'),
                 FileUpload::make('video_2'),
                 Select::make('user_id')
-                ->disabled()
-                ->label('User')
-                ->options(function () {
-                    return \App\Models\User::pluck('email', 'id');
-                })
-                ->required(),
+                    ->disabled()
+                    ->label('User')
+                    ->options(function () {
+                        return \App\Models\User::pluck('email', 'id');
+                    })
+                    ->required(),
+                Select::make('admin_id')
+                    ->disabled()
+                    ->default(Auth::id())
+                    ->label('Reviewed by')
+                    ->options(function () {
+                        return \App\Models\Admin::pluck('name', 'id');
+                    })
+                    ->required(),
                 TextInput::make('name')->disabled()->required(),
                 TextInput::make('dob')->disabled()->required(),
                 TextInput::make('gender')->disabled()->required(),
@@ -46,16 +55,26 @@ class ApplicationResource extends Resource
                 TextInput::make('governoment')->disabled()->required(),
                 TextInput::make('educational_qualification')->disabled()->required(),
                 TextInput::make('languages')->disabled()->required(),
-                TextInput::make('admin_rate')->numeric(),
+
+                // Conditionally disable 'admin_rate' if admin_id is set
+                TextInput::make('admin_rate')
+                    ->numeric()
+                    ->required()
+                    ->disabled(function ($get) {
+                        return $get('admin_id') !== null; // Disable if admin_id is present
+                    }),
+
+                // Conditionally disable 'is_approved' if admin_id is set
                 Select::make('is_approved')
-                ->label('Status')
-                ->options(function () {
-                    return [
+                    ->label('Status')
+                    ->options([
                         1 => 'Approved',
                         0 => 'Not Approved',
-                    ];
-                })
-                ->required(),
+                    ])
+                    ->required()
+                    ->disabled(function ($get) {
+                        return $get('admin_id') !== null; // Disable if admin_id is present
+                    }),
             ]);
     }
 
