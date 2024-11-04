@@ -31,6 +31,9 @@ class ApplicationResource extends Resource
     {
         return $form
             ->schema([
+                Hidden::make('admin_id')
+                ->default(fn ($get) => $get('admin_id') ?? Auth::id()) // Set default to Auth::id() if admin_id is not set
+                ->required(),
                 FileUpload::make('video_1'),
                 FileUpload::make('video_2'),
                 Select::make('user_id')
@@ -40,9 +43,6 @@ class ApplicationResource extends Resource
                         return \App\Models\User::pluck('email', 'id');
                     })
                     ->required(),
-                Hidden::make('admin_id')
-                ->default(fn ($get) => $get('admin_id') ?? Auth::id()) // Set default to Auth::id() if admin_id is not set
-                ->required(),
                 TextInput::make('name')->disabled()->required(),
                 TextInput::make('dob')->disabled()->required(),
                 TextInput::make('gender')->disabled()->required(),
