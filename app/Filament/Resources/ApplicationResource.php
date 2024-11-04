@@ -40,13 +40,15 @@ class ApplicationResource extends Resource
                     })
                     ->required(),
                 Select::make('admin_id')
-                    ->disabled()
-                    ->default(Auth::id())
-                    ->label('Reviewed by')
-                    ->options(function () {
-                        return \App\Models\Admin::pluck('name', 'id');
-                    })
-                    ->required(),
+                ->label('Reviewed by')
+                ->options(function () {
+                    return \App\Models\Admin::pluck('name', 'id');
+                })
+                ->default(fn ($get) => $get('admin_id') ?? Auth::id()) // Set default to Auth::id() if admin_id is not set
+                ->disabled(function ($get) {
+                    return $get('admin_id') !== null; // Disable if admin_id is already set
+                })
+                ->required(),
                 TextInput::make('name')->disabled()->required(),
                 TextInput::make('dob')->disabled()->required(),
                 TextInput::make('gender')->disabled()->required(),
