@@ -32,7 +32,7 @@ class ApplicationResource extends Resource
         return $form
             ->schema([
                 Hidden::make('admin_id')
-                ->default(Auth::id()) // Set default to Auth::id() if admin_id is not set
+                ->default(Auth::user()->id) // Set default to Auth::id() if admin_id is not set
                 ->required(),
                 FileUpload::make('video_1'),
                 FileUpload::make('video_2'),
