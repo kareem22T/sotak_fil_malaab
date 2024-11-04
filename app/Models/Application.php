@@ -35,7 +35,8 @@ class Application extends Model
         static::updating(function ($application) {
             // Set admin_id to the current authenticated admin's ID if not set
             if (is_null($application->admin_id)) {
-                $application->admin_id = Auth::id();
+                if (Auth::guard('admin')->check())
+                    $application->admin_id = Auth::id();
             }
         });
     }
