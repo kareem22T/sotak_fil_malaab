@@ -6,9 +6,11 @@ use App\Filament\Resources\SettingResource\Pages;
 use App\Filament\Resources\SettingResource\RelationManagers;
 use App\Models\Setting;
 use Filament\Forms;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -30,6 +32,18 @@ class SettingResource extends Resource
                     ->default(null),
                 Forms\Components\Textarea::make('terms_and_condition')
                     ->columnSpanFull(),
+                Forms\Components\Textarea::make('about_us')
+                    ->columnSpanFull(),
+                Select::make('submission')
+                    ->label('Open and close submission')
+                    ->options(function () {
+                        return [
+                            1 => 'Opening',
+                            0 => 'Cloased',
+                        ];
+                    })
+                    ->required(),
+
             ]);
     }
 
@@ -40,6 +54,18 @@ class SettingResource extends Resource
                 Tables\Columns\ImageColumn::make('main_sponsor'),
                 Tables\Columns\ImageColumn::make('profile_ad'),
                 Tables\Columns\TextColumn::make('terms_and_condition')->limit(50),
+                Tables\Columns\TextColumn::make('about_us')->limit(30),
+                BadgeColumn::make('submission')
+                ->label('Open and close submission')
+                ->colors([
+                    'danger' => 0, // Color red when it's closed
+                    'success' => 1, // Color green when it's open
+                ])
+                ->formatStateUsing(function ($state) {
+                    return $state == 1 ? 'Opening' : 'Closed'; // Format the state text
+                })
+                ->sortable(),
+
             ])
             ->filters([
                 //
