@@ -7,6 +7,7 @@ use App\Filament\Resources\ApplicationResource\RelationManagers;
 use App\Models\Application;
 use Filament\Forms;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -39,12 +40,8 @@ class ApplicationResource extends Resource
                         return \App\Models\User::pluck('email', 'id');
                     })
                     ->required(),
-                Select::make('admin_id')
-                ->label('Reviewed by')
-                ->options(function () {
-                    return \App\Models\Admin::pluck('name', 'id');
-                })
-                ->default(1) // Set default to Auth::id() if admin_id is not set
+                Hidden::make('admin_id')
+                ->default(fn ($get) => $get('admin_id') ?? Auth::id()) // Set default to Auth::id() if admin_id is not set
                 ->required(),
                 TextInput::make('name')->disabled()->required(),
                 TextInput::make('dob')->disabled()->required(),
