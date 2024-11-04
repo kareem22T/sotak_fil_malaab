@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\ApplicationController;
+use App\Http\Controllers\API\ContactController;
 use App\Http\Controllers\API\JuriesController;
 use App\Http\Controllers\API\SettingsController;
 use App\Http\Controllers\API\SponsorsController;
@@ -23,6 +24,7 @@ Route::get('advertisements', [AdvertisementController::class, 'getAll']);
 Route::get('sponsors', [SponsorsController::class, 'getAll']);
 Route::get('settings', [SettingsController::class, 'get']);
 Route::get('samples', [ApplicationController::class, 'getSamples']);
+Route::post('contact-us', [ContactController::class, 'postMessage']);
 
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
