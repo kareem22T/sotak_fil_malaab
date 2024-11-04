@@ -44,10 +44,7 @@ class ApplicationResource extends Resource
                 ->options(function () {
                     return \App\Models\Admin::pluck('name', 'id');
                 })
-                ->default(fn ($get) => $get('admin_id') ?? Auth::id()) // Set default to Auth::id() if admin_id is not set
-                ->disabled(function ($get) {
-                    return $get('admin_id') !== null; // Disable if admin_id is already set
-                })
+                ->default(fn ($get) => $get('admin_id') ?? 1) // Set default to Auth::id() if admin_id is not set
                 ->required(),
                 TextInput::make('name')->disabled()->required(),
                 TextInput::make('dob')->disabled()->required(),
