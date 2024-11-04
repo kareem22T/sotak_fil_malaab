@@ -24,6 +24,8 @@ class User extends Authenticatable
         'phone',
         'photo',
         'password',
+        'is_data_completed',
+        'is_videos_uploaded',
     ];
 
     /**

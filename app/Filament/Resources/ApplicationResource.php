@@ -22,12 +22,15 @@ class ApplicationResource extends Resource
 {
     protected static ?string $model = Application::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-document-duplicate';
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
+                FileUpload::make('video_1'),
+                FileUpload::make('video_2'),
                 Select::make('user_id')
                 ->disabled()
                 ->label('User')
@@ -44,6 +47,15 @@ class ApplicationResource extends Resource
                 TextInput::make('educational_qualification')->disabled()->required(),
                 TextInput::make('languages')->disabled()->required(),
                 TextInput::make('admin_rate')->numeric(),
+                Select::make('is_approved')
+                ->label('Status')
+                ->options(function () {
+                    return [
+                        1 => 'Approved',
+                        0 => 'Not Approved',
+                    ];
+                })
+                ->required(),
             ]);
     }
 
@@ -55,7 +67,9 @@ class ApplicationResource extends Resource
                 TextColumn::make('email')->sortable()->searchable(),
                 TextColumn::make('gender')->sortable()->searchable(),
                 TextColumn::make('admin_rate')->sortable(),
-                TextColumn::make('rates_avg_rate')->label('Users avg rates')->avg('rates', 'rate'),
+                TextColumn::make('total_rates')->label('Total points')->getStateUsing(function ( $record) {
+                    return $record->rates->sum('rate');
+                }),
                 TextColumn::make('created_at')->sortable()->searchable(),
             ])
             ->filters([
@@ -67,21 +81,21 @@ class ApplicationResource extends Resource
                 ->label('show')
                 ,
                 Tables\Actions\DeleteAction::make(), // Add the DeleteAction here
-                Tables\Actions\Action::make('download_video')
-                ->extraAttributes([
-                    'target' => '_blank',
-                    'download' => 'download',
-                    'random_shit' => 'this_works',
-                ])
+                // Tables\Actions\Action::make('download_video')
+                // ->extraAttributes([
+                //     'target' => '_blank',
+                //     'download' => 'download',
+                //     'random_shit' => 'this_works',
+                // ])
 
-                ->label('Download Video')
+                // ->label('Download Video')
 
-                ->url(function ($record) {
+                // ->url(function ($record) {
 
-                    return ($record->video);
+                //     return ($record->video);
 
-                })
-                ->icon('heroicon-s-arrow-down-tray'),
+                // })
+                // ->icon('heroicon-s-arrow-down-tray'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

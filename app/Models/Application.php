@@ -20,25 +20,16 @@ class Application extends Model
         'educational_qualification',
         'languages',
         'accept_terms',
-        'video',
+        'video_1',
         'video_2',
         'admin_rate',
+        'is_approved',
     ];
 
     // The languages field will be automatically cast to an array
     protected $casts = [
         'languages' => 'array',
     ];
-
-    public function getVideoAttribute($value)
-    {
-        return asset('storage/' . $value);
-    }
-
-    public function getVideo2Attribute($value)
-    {
-        return asset('storage/' . $value);
-    }
 
     /**
      * Get the user that owns the application.

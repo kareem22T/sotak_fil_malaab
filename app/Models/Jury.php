@@ -4,14 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Sample extends Model
+class Jury extends Model
 {
     protected $fillable = [
-        'title',
+        'image',
         'name',
-        'sub_title',
         'description',
-        'video',
     ];
 
 }
