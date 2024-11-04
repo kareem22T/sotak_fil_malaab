@@ -25,11 +25,11 @@ class AdminResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-user-plus';
     protected static ?int $navigationSort = 11;
-        // Define the singular label
-        public static function getLabel(): string
-        {
-            return 'Accounts'; // You can change this to any custom singular label
-        }
+    // Define the singular label
+    public static function getLabel(): string
+    {
+        return 'Accounts'; // You can change this to any custom singular label
+    }
 
 
     public static function form(Form $form): Form
@@ -43,21 +43,21 @@ class AdminResource extends Resource
                     ->email()
                     ->required()
                     ->maxLength(255),
-                    Password::make('password')
-                    ->label('Password')
-                    ->copyable(color: 'warning')
+                Forms\Components\TextInput::make('password')
+                    ->label(("Password"))
+                    ->password()
                     ->revealable()
-                    ->regeneratePassword(color: 'primary')
-                    ->dehydrateStateUsing(fn ($state) => Hash::make($state))
-                    ->dehydrated(fn ($state) => filled($state))
-                    ->required(fn (Page $livewire) => ($livewire instanceof CreateRecord))
-                    ->default(null)
-                    ->inlineSuffix(),
+                    ->required()
+                    ->confirmed()
+                    ->maxLength(255)
+                    ->default(function ($record) {
+                        return $record ? $record->password : null;
+                    }),
                 Forms\Components\Select::make('roles')
-                ->relationship('roles', 'name')
-                ->multiple()
-                ->preload()
-                ->searchable()
+                    ->relationship('roles', 'name')
+                    ->multiple()
+                    ->preload()
+                    ->searchable()
             ]);
     }
     public static function table(Table $table): Table
