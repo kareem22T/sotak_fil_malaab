@@ -23,6 +23,7 @@ class Application extends Model
         'video_1',
         'video_2',
         'admin_rate',
+        'admin_id',
         'is_approved',
     ];
 
