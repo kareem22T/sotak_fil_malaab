@@ -51,7 +51,7 @@ class AdminResource extends Resource
                     ->confirmed()
                     ->maxLength(255)
                     ->default(function ($record) {
-                        return $record ? $record->password : null;
+                        return null;
                     }),
                 Forms\Components\Select::make('roles')
                     ->relationship('roles', 'name')
