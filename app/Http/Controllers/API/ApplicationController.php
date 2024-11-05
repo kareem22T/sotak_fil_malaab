@@ -45,6 +45,16 @@ class ApplicationController extends Controller
                 'languages' => json_encode($request->languages),
                 'accept_terms' => $request->accept_terms,
             ]);
+
+            if (!$user->phone)
+                $user->update([
+                    'phone' => $request->phone,
+                ]);
+
+            if (!$user->name)
+                $user->update([
+                    'name' => $request->name,
+                ]);
         } else {
             return response()->json(['status' => false, 'msg' => 'Application already exists', 'notes' => ['Application already exists']], 400);
         }
@@ -89,7 +99,8 @@ class ApplicationController extends Controller
         return response()->json(['status' => true, 'msg' => 'Application completed successfully', 'data' => ['application' => $application], 'notes' => ['Application completed successfully']], 201);
     }
 
-    public function getSamples() {
+    public function getSamples()
+    {
         $sample1 = Sample::select('title', 'sub_title', 'description', 'video')->find(1);
         $sample2 = Sample::select('title', 'sub_title', 'description', 'video')->find(2);
 
@@ -148,8 +159,8 @@ class ApplicationController extends Controller
             return [
                 'id' => $application->id,
                 'name' => $application->name,
-                'video_1' => $application->video_1 ? asset('storage/' . $application->video_1) : $application->video_1 ,
-                'video_2' => $application->video_2 ? asset('storage/' . $application->video_2) : $application->video_2 ,
+                'video_1' => $application->video_1 ? asset('storage/' . $application->video_1) : $application->video_1,
+                'video_2' => $application->video_2 ? asset('storage/' . $application->video_2) : $application->video_2,
                 'image' => !empty($application->user->photo) ? asset('storage/' . $application->user->photo) : null,
                 'rate' => $application->rates->sum('rate'),
             ];
@@ -183,8 +194,8 @@ class ApplicationController extends Controller
                     'educational_qualification' => $application->educational_qualification,
                     'languages' => $application->languages,
                     'accept_terms' => $application->accept_terms,
-                    'video_1' => $application->video_1 ? asset('storage/' . $application->video_1) : $application->video_1 ,
-                    'video_2' => $application->video_2 ? asset('storage/' . $application->video_2) : $application->video_2 ,
+                    'video_1' => $application->video_1 ? asset('storage/' . $application->video_1) : $application->video_1,
+                    'video_2' => $application->video_2 ? asset('storage/' . $application->video_2) : $application->video_2,
                     'admin_rate' => $application->admin_rate,
                     'user' => $application->user,
                     'rates' => $application->rates,
@@ -220,8 +231,8 @@ class ApplicationController extends Controller
                     'educational_qualification' => $application->educational_qualification,
                     'languages' => $application->languages,
                     'accept_terms' => $application->accept_terms,
-                    'video_1' => $application->video_1 ? asset('storage/' . $application->video_1) : $application->video_1 ,
-                    'video_2' => $application->video_2 ? asset('storage/' . $application->video_2) : $application->video_2 ,
+                    'video_1' => $application->video_1 ? asset('storage/' . $application->video_1) : $application->video_1,
+                    'video_2' => $application->video_2 ? asset('storage/' . $application->video_2) : $application->video_2,
                     'admin_rate' => $application->admin_rate,
                     'user' => $application->user,
                     'rates' => $application->rates,
