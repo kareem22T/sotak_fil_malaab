@@ -13,7 +13,7 @@ class SettingsController extends Controller
         $settings = Setting::select(
             'main_sponsor',
             'profile_ad',
-            'about',
+            'about_us',
             'submission',
         )->first();
 
