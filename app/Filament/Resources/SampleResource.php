@@ -25,7 +25,6 @@ class SampleResource extends Resource
         return $form
             ->schema([
                 Forms\Components\FileUpload::make('video')
-                    ->maxSize(102400)
                     ->default(null),
                 Forms\Components\TextInput::make('title')
                     ->maxLength(255)
