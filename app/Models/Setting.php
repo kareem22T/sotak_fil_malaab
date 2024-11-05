@@ -10,6 +10,7 @@ class Setting extends Model
         'main_sponsor',
         'profile_ad',
         'ended_at',
+        'about_us',
         'terms_and_condition'
     ];
 }
