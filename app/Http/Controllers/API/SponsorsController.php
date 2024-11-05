@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class SponsorsController extends Controller
 {
     public function getAll() {
-        $Sponsors = Sponsor::select('image', 'link')->orderBy('sort', 'asc')->get();
+        $Sponsors = Sponsor::select('image', 'link')->orderBy('sort_order', 'asc')->get();
 
         foreach ($Sponsors as $key => $value) {
             $value->image = asset('storage/' . $value->image);

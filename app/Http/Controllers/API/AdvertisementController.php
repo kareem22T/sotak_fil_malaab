@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class AdvertisementController extends Controller
 {
     public function getAll() {
-        $Advertisements = Advertisement::select('image', 'link')->orderBy('sort', 'asc')->get();
+        $Advertisements = Advertisement::select('image', 'link')->orderBy('sort_order', 'asc')->get();
 
         foreach ($Advertisements as $key => $value) {
             $value->image = asset('storage/' . $value->image);

@@ -8,10 +8,13 @@
         "php": "^8.2",
         "bezhansalleh/filament-shield": "^3.2",
         "filament/filament": "^3.2.0",
+        "ibrahimbougaoua/filament-sort-order": "^1.1",
         "laravel/framework": "^11.9",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
-        "rawilk/filament-password-input": "^2.0"
+        "mokhosh/filament-kanban": "^2.9",
+        "rawilk/filament-password-input": "^2.0",
+        "spatie/eloquent-sortable": "^4.4"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('image');
             $table->string('link');
-            $table->integer('sort')->default(1);
+            $table->integer('sort_order')->nullable();
             $table->timestamps();
         });
     }
