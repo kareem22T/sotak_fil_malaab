@@ -80,7 +80,7 @@ class ApplicationResource extends Resource
                 ->getStateUsing(function ($record) {
                     return $record->user && $record->user->photo
                         ? asset('storage/' . $record->user->photo)
-                        : asset('default-photo.jpg'); // Default photo if user photo is missing
+                        : asset('default-avatar-icon-of-social-media-user-vector.jpg'); // Default photo if user photo is missing
                 }),
                 TextColumn::make('name')->sortable()->searchable(),
                 TextColumn::make('email')->sortable()->searchable(),
