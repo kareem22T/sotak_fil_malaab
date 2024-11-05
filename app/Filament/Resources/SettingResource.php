@@ -6,7 +6,9 @@ use App\Filament\Resources\SettingResource\Pages;
 use App\Filament\Resources\SettingResource\RelationManagers;
 use App\Models\Setting;
 use Filament\Forms;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -43,6 +45,8 @@ class SettingResource extends Resource
                         ];
                     })
                     ->required(),
+                DateTimePicker::make('ended_at')
+                    ->required(),
 
             ]);
     }
@@ -55,6 +59,7 @@ class SettingResource extends Resource
                 Tables\Columns\ImageColumn::make('profile_ad'),
                 Tables\Columns\TextColumn::make('terms_and_condition')->limit(50),
                 Tables\Columns\TextColumn::make('about_us')->limit(30),
+                Tables\Columns\TextColumn::make('ended_at'),
                 BadgeColumn::make('submission')
                 ->label('Open and close submission')
                 ->colors([

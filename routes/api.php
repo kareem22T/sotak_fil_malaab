@@ -25,6 +25,7 @@ Route::get('sponsors', [SponsorsController::class, 'getAll']);
 Route::get('settings', [SettingsController::class, 'get']);
 Route::get('samples', [ApplicationController::class, 'getSamples']);
 Route::post('contact-us', [ContactController::class, 'postMessage']);
+Route::post('days-left', [SettingsController::class, 'daysLeft']);
 
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);

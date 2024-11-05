@@ -20,5 +20,3 @@ Route::get('/unauthorized', function () {
 });
 
 Route::get('applications/{application}/video/download', [DownloadController::class, 'downloadVideo'])->name('application.video.download');
-
-Route::post('/sample', [SampleController::class, 'updateOrCreate'])->name('sample.updateOrCreate');

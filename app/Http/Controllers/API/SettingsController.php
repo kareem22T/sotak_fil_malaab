@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class SettingsController extends Controller
@@ -12,7 +13,8 @@ class SettingsController extends Controller
         $settings = Setting::select(
             'main_sponsor',
             'profile_ad',
-            'terms_and_condition'
+            'about',
+            'submission',
         )->first();
 
         $settings->main_sponsor = asset('storage/' . $settings->main_sponsor);
@@ -27,5 +29,19 @@ class SettingsController extends Controller
             'notes' => ['settings fetched successfully']
         ], 200);
 
+    }
+
+    public function daysLeft() {
+        $settings = Setting::first();
+        $daysLeft = Carbon::now()->diffInDays(Carbon::parse($settings->ended_at), false);
+
+        return response()->json([
+            'status' => true,
+            'msg' => 'settings fetched successfully',
+            'data' =>
+                $daysLeft
+            ,
+            'notes' => ['settings fetched successfully']
+        ], 200);
     }
 }
