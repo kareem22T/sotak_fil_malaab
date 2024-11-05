@@ -50,9 +50,9 @@ class SponsorResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
                 DownStepAction::make(),
                 UpStepAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->defaultSort('sort_order', 'asc')
             ->bulkActions([
