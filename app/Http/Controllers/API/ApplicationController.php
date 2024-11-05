@@ -21,6 +21,7 @@ class ApplicationController extends Controller
             'educational_qualification' => 'required|string',
             'languages' => 'required',
             'accept_terms' => 'required|boolean',
+            'photo' => 'nullable|image',
         ]);
 
         if ($validator->fails()) {
@@ -54,6 +55,12 @@ class ApplicationController extends Controller
                 $user->update([
                     'name' => $request->name,
                 ]);
+
+            if ($request->hasFile('photo')) {
+                $user->update([
+                    'photo' => $request->file('photo') ? $request->file('photo')->store('photos', 'public') : null,
+                ]);
+            }
         } else {
             return response()->json(['status' => false, 'msg' => 'Application already exists', 'notes' => ['Application already exists']], 400);
         }
