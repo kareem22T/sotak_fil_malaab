@@ -76,7 +76,12 @@ class ApplicationResource extends Resource
     {
         return $table
             ->columns([
-                ImageColumn::make('user.photo'),
+                ImageColumn::make('user.photo')
+                ->getStateUsing(function ($record) {
+                    return $record->user && $record->user->photo
+                        ? asset('storage/' . $record->user->photo)
+                        : asset('default-photo.jpg'); // Default photo if user photo is missing
+                }),
                 TextColumn::make('name')->sortable()->searchable(),
                 TextColumn::make('email')->sortable()->searchable(),
                 TextColumn::make('gender')->sortable()->searchable(),
