@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('title')->nullable();
             $table->string('sub_title')->nullable();
             $table->text('description')->nullable();
+            $table->dateTime('ended_at')->nullable();
             $table->timestamps();
         });
     }
