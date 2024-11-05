@@ -33,7 +33,7 @@ class SettingsController extends Controller
 
     public function daysLeft() {
         $settings = Setting::first();
-        $daysLeft = Carbon::now()->diffInDays(Carbon::parse($settings->ended_at), false);
+        $daysLeft = Carbon::now()->diffInDays(Carbon::parse($settings->ended_at));
 
         return response()->json([
             'status' => true,
