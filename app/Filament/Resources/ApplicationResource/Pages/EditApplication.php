@@ -3,6 +3,8 @@
 namespace App\Filament\Resources\ApplicationResource\Pages;
 
 use App\Filament\Resources\ApplicationResource;
+use App\Filament\Resources\ApplicationResource\Widgets\HandleShowVideo1;
+use App\Filament\Resources\ApplicationResource\Widgets\HandleShowVideo2;
 use App\Filament\Resources\ApplicationResource\Widgets\ImageWidget;
 use Filament\Actions;
 use Filament\Actions\Action;
@@ -57,6 +59,12 @@ class EditApplication extends EditRecord
     {
         return [
             ImageWidget::make([
+                'record' => $this->record,
+            ]),
+            HandleShowVideo1::make([
+                'record' => $this->record,
+            ]),
+            HandleShowVideo2::make([
                 'record' => $this->record,
             ]),
         ];

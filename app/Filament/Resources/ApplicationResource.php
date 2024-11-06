@@ -32,15 +32,6 @@ class ApplicationResource extends Resource
     {
         return $form
             ->schema([
-                FileUpload::make('video_1'),
-                FileUpload::make('video_2'),
-                Select::make('user_id')
-                    ->disabled()
-                    ->label('User')
-                    ->options(function () {
-                        return \App\Models\User::pluck('email', 'id');
-                    })
-                    ->required(),
                 TextInput::make('name')->disabled()->required(),
                 TextInput::make('dob')->disabled()->required(),
                 TextInput::make('gender')->disabled()->required(),
