@@ -9,13 +9,14 @@ use App\Http\Controllers\API\ContactController;
 use App\Http\Controllers\API\JuriesController;
 use App\Http\Controllers\API\SettingsController;
 use App\Http\Controllers\API\SponsorsController;
+use App\Http\Middleware\EnsureEmailIsVerified;
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('complete-data', [ApplicationController::class, 'postApplication']);
-    Route::post('/applications/post-videos', [ApplicationController::class, 'postApplicationVideos']);
-    Route::post('rate-application/{application}', [ApplicationController::class, 'rateApplication']);
+    Route::post('complete-data', [ApplicationController::class, 'postApplication'])->middleware(EnsureEmailIsVerified::class);
+    Route::post('/applications/post-videos', [ApplicationController::class, 'postApplicationVideos'])->middleware(EnsureEmailIsVerified::class);
+    Route::post('rate-application/{application}', [ApplicationController::class, 'rateApplication'])->middleware(EnsureEmailIsVerified::class);
     Route::get('get-application/{application}', [ApplicationController::class, 'getApplication']);
-    Route::get('get-user-application', [ApplicationController::class, 'getUserApplication']);
+    Route::get('get-user-application', [ApplicationController::class, 'getUserApplication'])->middleware(EnsureEmailIsVerified::class);
     Route::get('applications', [ApplicationController::class, 'getApplications']);
 });
 
@@ -34,3 +35,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('profile', [AuthController::class, 'profile']);
     Route::post('update-profile', [AuthController::class, 'updateProfile']);
 });
+
+
+Route::get('/user/ask-email-verfication-code', [AuthController::class, "askEmailCode"])->middleware('auth:sanctum');
+Route::post('/user/verify-email', [AuthController::class, "verifyEmail"])->middleware('auth:sanctum');
+Route::post('/user/change-password', [AuthController::class, "changePassword"])->middleware('auth:sanctum');
+Route::post('/user/ask-for-forgot-password-email-code', [AuthController::class, "askEmailCodeForgot"]);
+Route::post('/user/forgot-password', [AuthController::class, "forgetPassword"]);
+Route::post('/user/forgot-password-check-code', [AuthController::class, "checkCodeForgot"]);

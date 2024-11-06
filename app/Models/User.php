@@ -26,6 +26,9 @@ class User extends Authenticatable
         'password',
         'is_data_completed',
         'is_videos_uploaded',
+        'is_email_verified',
+        'email_last_verfication_code',
+        'email_last_verfication_code_expird_at',
     ];
 
     /**
