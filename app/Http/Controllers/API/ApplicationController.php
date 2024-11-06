@@ -154,7 +154,7 @@ class ApplicationController extends Controller
 
         if ($request->has('sort')) {
             if ($request->sort === 'most_rated') {
-                $query->withCount('rates')->orderBy('rates_count', 'desc');
+                $query->withSum('rates', 'rate')->orderBy('rates_sum', 'desc');
             } elseif ($request->sort === 'latest') {
                 $query->orderBy('created_at', 'desc');
             }
