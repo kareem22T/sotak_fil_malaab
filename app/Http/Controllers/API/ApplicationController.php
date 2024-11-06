@@ -154,15 +154,21 @@ class ApplicationController extends Controller
 
         if ($request->has('sort')) {
             if ($request->sort === 'most_rated') {
-                if ($request->sort === 'most_rated') {
-                    $query->select('applications.*')
-                        ->selectSub(function ($query) {
-                            $query->from('rates')
-                                ->whereColumn('applications.id', 'rates.application_id')
-                                ->selectRaw('SUM(rate)');
-                        }, 'rates_sum_rate')
-                        ->orderBy('rates_sum_rate', 'desc');
-                }
+                $query->select('applications.*')
+                    ->selectSub(function ($query) {
+                        $query->from('rates')
+                            ->whereColumn('applications.id', 'rates.application_id')
+                            ->selectRaw('SUM(rate)');
+                    }, 'rates_sum_rate')
+                    ->orderBy('rates_sum_rate', 'desc');
+            } elseif ($request->sort === 'lowest_rated') {
+                $query->select('applications.*')
+                    ->selectSub(function ($query) {
+                        $query->from('rates')
+                            ->whereColumn('applications.id', 'rates.application_id')
+                            ->selectRaw('MIN(rate)');
+                    }, 'lowest_rate')
+                    ->orderBy('lowest_rate', 'asc');
             } elseif ($request->sort === 'latest') {
                 $query->orderBy('created_at', 'desc');
             }
