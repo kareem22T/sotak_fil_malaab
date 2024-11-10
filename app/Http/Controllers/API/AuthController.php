@@ -109,6 +109,7 @@ class AuthController extends Controller
             $user->video_1 = $application->video_1 ? asset('storage/' . $application->video_1) : $application->video_1;
             $user->video_2 = $application->video_2 ? asset('storage/' . $application->video_2) : $application->video_2;
             $user->is_approved = $application->is_approved;
+            $user->rate = $application->rates->sum('rate');
         }
 
         return response()->json(['status' => true, 'msg' => 'User profile fetched', 'data' => ['user' => $user], 'notes' => ['User profile fetched']], 200);
