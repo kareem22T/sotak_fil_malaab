@@ -105,7 +105,7 @@ class AuthController extends Controller
             $user->photo = $photoUrl;
         }
 
-        if (!$application) {
+        if ($application) {
             $user->video_1 = $application->video_1 ? asset('storage/' . $application->video_1) : $application->video_1;
             $user->video_2 = $application->video_2 ? asset('storage/' . $application->video_2) : $application->video_2;
             $user->is_approved = $application->is_approved;
