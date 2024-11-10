@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
+use App\Models\Application;
 use App\Traits\SendEmailTrait;
 use Carbon\Carbon;
 
@@ -92,6 +93,8 @@ class AuthController extends Controller
 
     public function profile(Request $request)
     {
+        $application = Application::with(['rates.user', 'user'])->where('user_id', $request->user()->id)->first();
+
         $user = $request->user();
         // Get the full path of the photo
         $photoPath = $user->photo;
@@ -100,6 +103,12 @@ class AuthController extends Controller
         if ($photoPath) {
             $photoUrl = asset('storage/' . $user->photo);
             $user->photo = $photoUrl;
+        }
+
+        if (!$application) {
+            $user->video_1 = $application->video_1 ? asset('storage/' . $application->video_1) : $application->video_1;
+            $user->video_2 = $application->video_2 ? asset('storage/' . $application->video_2) : $application->video_2;
+            $user->is_approved = $application->is_approved;
         }
 
         return response()->json(['status' => true, 'msg' => 'User profile fetched', 'data' => ['user' => $user], 'notes' => ['User profile fetched']], 200);
