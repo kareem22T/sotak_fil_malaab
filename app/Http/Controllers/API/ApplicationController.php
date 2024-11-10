@@ -254,6 +254,7 @@ class ApplicationController extends Controller
                     'video_1' => $application->video_1 ? asset('storage/' . $application->video_1) : $application->video_1,
                     'video_2' => $application->video_2 ? asset('storage/' . $application->video_2) : $application->video_2,
                     'admin_rate' => $application->admin_rate,
+                    'is_approved' => $application->is_approved,
                     'user' => $application->user,
                     'rates' => $application->rates,
                     'rate' => $application->rates->sum('rate'),
