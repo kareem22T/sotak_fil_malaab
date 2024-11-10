@@ -62,5 +62,8 @@ class Application extends Model
         return $this->belongsTo(Admin::class);
     }
 
-
+    public function ratesForVideo($video)
+    {
+        return $this->rates()->where('video', $video);
+    }
 }

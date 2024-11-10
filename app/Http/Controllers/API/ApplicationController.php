@@ -123,6 +123,7 @@ class ApplicationController extends Controller
     public function rateApplication(Request $request, Application $application)
     {
         $validator = Validator::make($request->all(), [
+            'video' => 'required|string|in:video_1,video_2', // Accept only "video_1" or "video_2"
             'rate' => 'required|integer|min:1|max:5'
         ]);
 
@@ -131,18 +132,24 @@ class ApplicationController extends Controller
             return response()->json(['status' => false, 'msg' => $firstError, 'notes' => ['Invalid data']], 400);
         }
 
-        $existingRate = $application->rates()->where('user_id', $request->user()->id)->first();
+        $video = $request->input('video');
+        $userId = $request->user()->id;
+
+        // Check if the user has already rated the selected video
+        $existingRate = $application->rates()->where('user_id', $userId)->where('video', $video)->first();
 
         if ($existingRate) {
-            return response()->json(['status' => false, 'msg' => 'You have already rated this application', 'notes' => ['You have already rated this application']], 400);
+            return response()->json(['status' => false, 'msg' => 'You have already rated this video', 'notes' => ['Already rated']], 400);
         }
 
+        // Save the rate for the specific video
         $application->rates()->create([
-            'user_id' => $request->user()->id,
+            'user_id' => $userId,
             'rate' => $request->rate,
+            'video' => $video,
         ]);
 
-        return response()->json(['status' => true, 'msg' => 'Application rated successfully', 'data' => null, 'notes' => ['Application rated successfully']], 200);
+        return response()->json(['status' => true, 'msg' => 'Video rated successfully', 'data' => null, 'notes' => ['Video rated successfully']], 200);
     }
 
     public function getApplications(Request $request)
@@ -182,8 +189,9 @@ class ApplicationController extends Controller
                 'video_1' => $application->video_1 ? asset('storage/' . $application->video_1) : $application->video_1,
                 'video_2' => $application->video_2 ? asset('storage/' . $application->video_2) : $application->video_2,
                 'image' => !empty($application->user->photo) ? asset('storage/' . $application->user->photo) : null,
-                'rate' => $application->rates->sum('rate'),
-            ];
+                'rate_video_1' => $application->ratesForVideo('video_1')->sum('rate') ?? 0,
+                'rate_video_2' => $application->ratesForVideo('video_2')->sum('rate') ?? 0,                    'created_at' => $application->created_at,
+        ];
         });
 
         $paginatedApplications = $applications->setCollection($applicationsWithAvgRate);
@@ -219,7 +227,8 @@ class ApplicationController extends Controller
                     'admin_rate' => $application->admin_rate,
                     'user' => $application->user,
                     'rates' => $application->rates,
-                    'rate' => $application->rates->sum('rate'),
+                    'rate_video_1' => $application->ratesForVideo('video_1')->sum('rate') ?? 0,
+                    'rate_video_2' => $application->ratesForVideo('video_2')->sum('rate') ?? 0,                    'created_at' => $application->created_at,
                     'created_at' => $application->created_at,
                     'updated_at' => $application->updated_at,
                 ]
@@ -257,8 +266,8 @@ class ApplicationController extends Controller
                     'is_approved' => $application->is_approved,
                     'user' => $application->user,
                     'rates' => $application->rates,
-                    'rate' => $application->rates->sum('rate'),
-                    'created_at' => $application->created_at,
+                    'rate_video_1' => $application->ratesForVideo('video_1')->sum('rate') ?? 0,
+                    'rate_video_2' => $application->ratesForVideo('video_2')->sum('rate') ?? 0,                    'created_at' => $application->created_at,
                     'updated_at' => $application->updated_at,
                 ]
             ],
