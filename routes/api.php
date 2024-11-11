@@ -18,6 +18,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('get-application/{application}', [ApplicationController::class, 'getApplication']);
     Route::get('get-user-application', [ApplicationController::class, 'getUserApplication'])->middleware(EnsureEmailIsVerified::class);
     Route::get('applications', [ApplicationController::class, 'getApplications']);
+    Route::get('check-if-application-exists', [ApplicationController::class, 'checkIsApplicationExists']);
 });
 
 Route::get('juries', [JuriesController::class, 'getAllJuries']);

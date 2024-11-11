@@ -105,6 +105,18 @@ class ApplicationController extends Controller
         return response()->json(['status' => true, 'msg' => 'Application completed successfully', 'data' => ['application' => $application], 'notes' => ['Application completed successfully']], 201);
     }
 
+    public function checkIsApplicationExists(Request $request) {
+        $user = $request->user();
+
+        $application = Application::where('user_id', $user->id)->first();
+
+        if ($application) {
+            return response()->json(['status' => false, 'msg' => 'Application already exists', [], []], 400);
+        }
+        return response()->json(['status' => true, 'msg' => 'Application not exists', 'data' => ['application' => $application], []], 201);
+
+    }
+
     public function getSamples()
     {
         $sample1 = Sample::select('title', 'sub_title', 'description', 'video')->find(1);
@@ -189,6 +201,7 @@ class ApplicationController extends Controller
                 'video_1' => $application->video_1 ? asset('storage/' . $application->video_1) : $application->video_1,
                 'video_2' => $application->video_2 ? asset('storage/' . $application->video_2) : $application->video_2,
                 'image' => !empty($application->user->photo) ? asset('storage/' . $application->user->photo) : null,
+                'rate' => $application->rates->sum('rate'),
                 'rate_video_1' => $application->ratesForVideo('video_1')->sum('rate') ?? 0,
                 'rate_video_2' => $application->ratesForVideo('video_2')->sum('rate') ?? 0,                    'created_at' => $application->created_at,
         ];
