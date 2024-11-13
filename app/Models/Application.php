@@ -101,13 +101,13 @@ class Application extends Model
         29 => 'North Sinai',
     ];
 
-    public function getGenderAttribute()
+    public function getGenderAttribute($value)
     {
-        return self::$genders[$this->gender] ?? $this->gender;
+        return self::$genders[$value] ?? $value;
     }
 
-    public function getGovernomentAttribute()
+    public function getGovernomentAttribute($value)
     {
-        return self::$governorates[$this->governoment] ?? $this->governoment;
+        return self::$governorates[$value] ?? $value;
     }
 }
