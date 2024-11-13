@@ -103,11 +103,11 @@ class Application extends Model
 
     public function getGenderAttribute()
     {
-        return self::$genders[$this->gender] ?? 'Unknown';
+        return self::$genders[$this->gender] ?? $this->gender;
     }
 
     public function getGovernomentAttribute()
     {
-        return self::$governorates[$this->governoment] ?? 'Unknown';
+        return self::$governorates[$this->governoment] ?? $this->governoment;
     }
 }
