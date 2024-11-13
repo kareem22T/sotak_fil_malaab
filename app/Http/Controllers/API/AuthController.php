@@ -53,6 +53,18 @@ class AuthController extends Controller
 
         $token = $user->createToken('token')->plainTextToken;
 
+
+        $code = rand(100000, 999999);
+
+        $user->email_last_verfication_code = Hash::make($code);
+        $user->email_last_verfication_code_expird_at = Carbon::now()->addMinutes(10)->timezone('Europe/Istanbul');
+        $user->save();
+
+        $msg_title = "تفضل رمز تفعيل بريدك الالكتروني";
+        $msg_content = "<h1>رمز التاكيد هو <span style='color: blue'>" . $code . "</span></h1>";
+
+        $this->sendEmail($user->email, $msg_title, $msg_content);
+
         $user->token = $token;
 
         return response()->json(['status' => true, 'msg' => 'User registered successfully', 'data' => ['user' => $user], 'notes' => ['User registered successfully']], 201);
