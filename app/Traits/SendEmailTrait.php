@@ -19,7 +19,7 @@ trait SendEmailTrait
             //Server settings
             $mail->SMTPDebug = SMTP::DEBUG_SERVER; //Enable verbose debug output
             $mail->isSMTP(); //Send using SMTP
-            $mail->Host = 'mail.clicksegypttechnologies.com'; //Set the SMTP server to send through
+            $mail->Host = 'sender.clicksegypttechnologies.com'; //Set the SMTP server to send through
             $mail->SMTPAuth = true; //Enable SMTP authentication
             $mail->Username = 'sender@clicksegypttechnologies.com'; //SMTP username
             $mail->Password = 'MjM[H!6fHeEv'; //SMTP password
