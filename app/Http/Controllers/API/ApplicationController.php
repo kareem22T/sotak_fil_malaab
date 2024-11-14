@@ -90,7 +90,7 @@ class ApplicationController extends Controller
                     'video_2' => $request->file('video_2')->store('applications', 'public'),
                 ]);
         } else {
-            return response()->json(['status' => false, 'msg' => 'Data not completed', 'notes' => ['Application already exists']], 400);
+            return response()->json(['status' => false, 'msg' => 'Data not completed', 'notes' => ['Data not completed']], 400);
         }
 
 
