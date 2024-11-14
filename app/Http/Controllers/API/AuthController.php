@@ -35,6 +35,7 @@ class AuthController extends Controller
             'email' => $request->email,
             'phone' => $request->get('phone'),
             'password' => Hash::make($request->password),
+            'is_email_verified' => true
         ]);
 
         if ($request->photo)
@@ -165,21 +166,27 @@ class AuthController extends Controller
 
     public function askEmailCode(Request $request)
     {
-        $user = $request->user();
+        $validator = Validator::make($request->all(), [
+            'email' => 'required',
+        ]);
 
-        if ($user) {
+        if ($validator->fails()) {
+            $firstError = $validator->errors()->first();
+            return response()->json(['status' => false, 'msg' => $firstError, 'data' => null, 'notes' => ['Invalid data']], 400);
+        }
+
+        $email = $request->get('email');
+
+        if ($email) {
             $code = rand(100000, 999999);
 
-            $user->email_last_verfication_code = Hash::make($code);
-            $user->email_last_verfication_code_expird_at = Carbon::now()->addMinutes(10)->timezone('Europe/Istanbul');
-            $user->save();
 
             $msg_title = "تفضل رمز تفعيل بريدك الالكتروني";
             $msg_content = "<h1>رمز التاكيد هو <span style='color: blue'>" . $code . "</span></h1>";
 
-            $this->sendEmail($user->email, $msg_title, $msg_content);
+            $this->sendEmail($email, $msg_title, $msg_content);
 
-            return response()->json(['status' => true, 'msg' => 'تم ارسال رمز التحقق بنجاح عبر الايميل', 'data' => [], 'notes' => ['code expires after 10 minutes']], 200);
+            return response()->json(['status' => true, 'msg' => 'تم ارسال رمز التحقق بنجاح عبر الايميل', 'data' => ['code' => $code], 'notes' => ['code expires after 10 minutes']], 200);
         }
 
         return response()->json(['status' => false, 'msg' => 'Invalid process', 'data' => [], 'notes' => ['code expires after 10 minutes']], 400);

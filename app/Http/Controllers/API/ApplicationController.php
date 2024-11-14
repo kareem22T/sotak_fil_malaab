@@ -16,7 +16,6 @@ class ApplicationController extends Controller
             'name' => 'required|string',
             'dob' => 'required|date',
             'gender' => 'required|string',
-            'phone' => 'required|string',
             'governoment' => 'required|string',
             'educational_qualification' => 'required|string',
             'languages' => 'required',
@@ -38,18 +37,13 @@ class ApplicationController extends Controller
                 'name' => $request->name,
                 'dob' => $request->dob,
                 'gender' => $request->gender,
-                'phone' => $request->phone,
+                'phone' => $user->phone,
                 'email' => $user->email,
                 'governoment' => $request->governoment,
                 'educational_qualification' => $request->educational_qualification,
                 'languages' => json_encode($request->languages),
                 'accept_terms' => $request->accept_terms,
             ]);
-
-            if (!$user->phone)
-                $user->update([
-                    'phone' => $request->phone,
-                ]);
 
             if (!$user->name)
                 $user->update([
@@ -74,8 +68,8 @@ class ApplicationController extends Controller
     public function postApplicationVideos(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'video_1' => 'required',
-            'video_2' => 'required',
+            'video_1' => 'nullable',
+            'video_2' => 'nullable',
         ]);
 
         if ($validator->fails()) {
@@ -87,10 +81,14 @@ class ApplicationController extends Controller
         $application = Application::where('user_id', $user->id)->first();
 
         if ($application) {
-            $application->update([
-                'video_1' => $request->file('video_1')->store('applications', 'public'),
-                'video_2' => $request->file('video_2')->store('applications', 'public'),
-            ]);
+            if ($request->video_1)
+                $application->update([
+                    'video_1' => $request->file('video_1')->store('applications', 'public'),
+                ]);
+            if ($request->video_2)
+                $application->update([
+                    'video_2' => $request->file('video_2')->store('applications', 'public'),
+                ]);
         } else {
             return response()->json(['status' => false, 'msg' => 'Data not completed', 'notes' => ['Application already exists']], 400);
         }
@@ -102,7 +100,7 @@ class ApplicationController extends Controller
         $application->video_1 = $application->video_1 ? asset('storage/' . $application->video_1) : $application->video_1;
         $application->video_2 = $application->video_2 ? asset('storage/' . $application->video_2) : $application->video_2;
 
-        return response()->json(['status' => true, 'msg' => 'Application completed successfully', 'data' => ['application' => $application], 'notes' => ['Application completed successfully']], 201);
+        return response()->json(['status' => true, 'msg' => 'video posted successfully', 'data' => ['application' => $application], 'notes' => ['Application completed successfully']], 201);
     }
 
     public function checkIsApplicationExists(Request $request) {
@@ -111,13 +109,18 @@ class ApplicationController extends Controller
         $application = Application::where('user_id', $user->id)->first();
 
         if ($application) {
-            return response()->json(['status' => false, 'msg' => 'Application already exists', [], []], 400);
+            if ($application->video_1 && $application->video_2)
+                return response()->json(['status' => true, 'msg' => 'Application exists', 'data' => "BOTH_UPLOADED"], 200);
+            if ($application->video_1)
+                return response()->json(['status' => true, 'msg' => 'Application exists', 'data' => "VIDEO_1_UPLOADED"], 200);
+            if ($application->video_2)
+                return response()->json(['status' => true, 'msg' => 'Application exists', 'data' => "VIDEO_2_UPLOADED"], 200);
         }
-        return response()->json(['status' => true, 'msg' => 'Application not exists', 'data' => ['application' => $application], []], 201);
+        return response()->json(['status' => false, 'msg' => 'Application not exists', 'data' => ['application' => $application], []], 200);
 
     }
 
-    public function getSamples()
+    public function getSamples(Request $request)
     {
         $sample1 = Sample::select('title', 'sub_title', 'description', 'video')->find(1);
         $sample2 = Sample::select('title', 'sub_title', 'description', 'video')->find(2);
@@ -125,10 +128,13 @@ class ApplicationController extends Controller
         $sample1->video = asset('storage/' . $sample1->video);
         $sample2->video = asset('storage/' . $sample2->video);
 
+        $application = Application::with(['rates.user', 'user'])->where('user_id', $request->user()->id)->first();
+
         $data = [
-            "sample_1" => $sample1,
-            "sample_2" => $sample2,
+            "sample_1" => $application->video_1 ? null : $sample1,
+            "sample_2" => $application->video_2 ? null : $sample2
         ];
+
         return response()->json(['status' => true, 'msg' => 'Samples fetched successfully', 'data' => $data, 'notes' => ['samples got']], 201);
     }
 

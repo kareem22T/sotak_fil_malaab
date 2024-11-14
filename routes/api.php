@@ -25,7 +25,7 @@ Route::get('juries', [JuriesController::class, 'getAllJuries']);
 Route::get('advertisements', [AdvertisementController::class, 'getAll']);
 Route::get('sponsors', [SponsorsController::class, 'getAll']);
 Route::get('settings', [SettingsController::class, 'get']);
-Route::get('samples', [ApplicationController::class, 'getSamples']);
+Route::get('samples', [ApplicationController::class, 'getSamples'])->middleware('auth:sanctum');
 Route::post('contact-us', [ContactController::class, 'postMessage']);
 Route::get('days-left', [SettingsController::class, 'daysLeft']);
 
@@ -37,8 +37,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('update-profile', [AuthController::class, 'updateProfile']);
 });
 
-
-Route::get('/user/ask-email-verfication-code', [AuthController::class, "askEmailCode"])->middleware('auth:sanctum');
+Route::get('/user/ask-email-verfication-code', [AuthController::class, "askEmailCode"]);
 Route::post('/user/verify-email', [AuthController::class, "verifyEmail"])->middleware('auth:sanctum');
 Route::post('/user/change-password', [AuthController::class, "changePassword"])->middleware('auth:sanctum');
 Route::post('/user/ask-for-forgot-password-email-code', [AuthController::class, "askEmailCodeForgot"]);
