@@ -118,7 +118,7 @@ class ApplicationController extends Controller
 
             return response()->json(['status' => true, 'msg' => 'videos not exists', 'data' => "No_VIDEOS"], 200);
         }
-        return response()->json(['status' => false, 'msg' => 'Application not exists', 'data' => []], 200);
+        return response()->json(['status' => false, 'msg' => 'Application not exists', 'data' => ""], 200);
 
     }
 
