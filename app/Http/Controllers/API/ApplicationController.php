@@ -13,7 +13,6 @@ class ApplicationController extends Controller
     public function postApplication(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string',
             'dob' => 'required|date',
             'gender' => 'required|string',
             'governoment' => 'required|string',
@@ -34,7 +33,7 @@ class ApplicationController extends Controller
         if (!$application) {
             $application = Application::create([
                 'user_id' => $user->id,
-                'name' => $request->name,
+                'name' => $user->name,
                 'dob' => $request->dob,
                 'gender' => $request->gender,
                 'phone' => $user->phone,
