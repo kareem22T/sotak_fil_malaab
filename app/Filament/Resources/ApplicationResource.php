@@ -33,7 +33,7 @@ class ApplicationResource extends Resource
         return $form
             ->schema([
                 TextInput::make('name')->disabled()->required(),
-                TextInput::make('dob')->disabled()->required(),
+                TextInput::make('dob')->label("age")->disabled()->required(),
                 TextInput::make('gender')->disabled()->required(),
                 TextInput::make('phone')->disabled()->required(),
                 TextInput::make('email')->disabled()->required(),
