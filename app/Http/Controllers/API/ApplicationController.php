@@ -122,8 +122,8 @@ class ApplicationController extends Controller
 
     public function getSamples(Request $request)
     {
-        $sample1 = Sample::select('title', 'sub_title', 'description', 'video')->find(1);
-        $sample2 = Sample::select('title', 'sub_title', 'description', 'video')->find(2);
+        $sample1 = Sample::select('title', 'sub_title', 'description', 'video', 'thumbnail')->find(1);
+        $sample2 = Sample::select('title', 'sub_title', 'description', 'video', 'thumbnail')->find(2);
 
         $sample1->video = asset('storage/' . $sample1->video);
         $sample2->video = asset('storage/' . $sample2->video);
