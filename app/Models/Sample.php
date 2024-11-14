@@ -10,6 +10,7 @@ class Sample extends Model
         'title',
         'name',
         'sub_title',
+        'thumbnail',
         'description',
         'video',
     ];
