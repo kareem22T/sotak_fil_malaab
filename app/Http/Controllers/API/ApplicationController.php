@@ -131,8 +131,8 @@ class ApplicationController extends Controller
         $application = Application::with(['rates.user', 'user'])->where('user_id', $request->user()->id)->first();
 
         $data = [
-            "sample_1" => $application?->video_1 ? null : $sample1,
-            "sample_2" => $application?->video_2 ? null : $sample2
+            "sample_1" => ($application?->video_1 && $application) ? null : $sample1,
+            "sample_2" => ($application?->video_2  && $application) ?  null : $sample2
         ];
 
         return response()->json(['status' => true, 'msg' => 'Samples fetched successfully', 'data' => $data, 'notes' => ['samples got']], 201);
