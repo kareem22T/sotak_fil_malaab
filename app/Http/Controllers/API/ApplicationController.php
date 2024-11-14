@@ -175,6 +175,15 @@ class ApplicationController extends Controller
 
     public function getApplications(Request $request)
     {
+        $sample1 = Sample::select('title', 'sub_title', 'description', 'video', 'thumbnail')->find(1);
+        $sample2 = Sample::select('title', 'sub_title', 'description', 'video', 'thumbnail')->find(2);
+
+        $sample1->video = asset('storage/' . $sample1->video);
+        $sample2->video = asset('storage/' . $sample2->video);
+
+        $sample1->thumbnail = asset('storage/' . $sample1->thumbnail);
+        $sample2->thumbnail = asset('storage/' . $sample2->thumbnail);
+
         $query = Application::query();
 
         $query->where('is_approved', true);
@@ -202,8 +211,9 @@ class ApplicationController extends Controller
             }
         }
 
+
         $applications = $query->paginate(20);
-        $applicationsWithAvgRate = $applications->getCollection()->map(function ($application) {
+        $applicationsWithAvgRate = $applications->getCollection()->map(function ($application) use ($sample2, $sample1) {
             return [
                 'id' => $application->id,
                 'name' => $application->name,
@@ -212,7 +222,10 @@ class ApplicationController extends Controller
                 'image' => !empty($application->user->photo) ? asset('storage/' . $application->user->photo) : null,
                 'rate' => $application->rates->sum('rate'),
                 'rate_video_1' => $application->ratesForVideo('video_1')->sum('rate') ?? 0,
-                'rate_video_2' => $application->ratesForVideo('video_2')->sum('rate') ?? 0,                    'created_at' => $application->created_at,
+                'rate_video_2' => $application->ratesForVideo('video_2')->sum('rate') ?? 0,
+                'created_at' => $application->created_at,
+                'sample_1' => $sample1,
+                'sample_2' => $sample2,
         ];
         });
 
@@ -223,6 +236,15 @@ class ApplicationController extends Controller
 
     public function getApplication($id)
     {
+        $sample1 = Sample::select('title', 'sub_title', 'description', 'video', 'thumbnail')->find(1);
+        $sample2 = Sample::select('title', 'sub_title', 'description', 'video', 'thumbnail')->find(2);
+
+        $sample1->video = asset('storage/' . $sample1->video);
+        $sample2->video = asset('storage/' . $sample2->video);
+
+        $sample1->thumbnail = asset('storage/' . $sample1->thumbnail);
+        $sample2->thumbnail = asset('storage/' . $sample2->thumbnail);
+
         $application = Application::with(['rates.user', 'user'])->find($id);
 
         if (!$application) {
@@ -253,6 +275,8 @@ class ApplicationController extends Controller
                     'rate_video_2' => $application->ratesForVideo('video_2')->sum('rate') ?? 0,                    'created_at' => $application->created_at,
                     'created_at' => $application->created_at,
                     'updated_at' => $application->updated_at,
+                    'sample_1' => $sample1,
+                    'sample_2' => $sample2,
                 ]
             ],
             'notes' => ['Application fetched successfully']
@@ -261,6 +285,15 @@ class ApplicationController extends Controller
 
     public function getUserApplication(Request $request)
     {
+        $sample1 = Sample::select('title', 'sub_title', 'description', 'video', 'thumbnail')->find(1);
+        $sample2 = Sample::select('title', 'sub_title', 'description', 'video', 'thumbnail')->find(2);
+
+        $sample1->video = asset('storage/' . $sample1->video);
+        $sample2->video = asset('storage/' . $sample2->video);
+
+        $sample1->thumbnail = asset('storage/' . $sample1->thumbnail);
+        $sample2->thumbnail = asset('storage/' . $sample2->thumbnail);
+
         $application = Application::with(['rates.user', 'user'])->where('user_id', $request->user()->id)->first();
 
         if (!$application) {
@@ -291,6 +324,8 @@ class ApplicationController extends Controller
                     'rate_video_1' => $application->ratesForVideo('video_1')->sum('rate') ?? 0,
                     'rate_video_2' => $application->ratesForVideo('video_2')->sum('rate') ?? 0,                    'created_at' => $application->created_at,
                     'updated_at' => $application->updated_at,
+                    'sample_1' => $sample1,
+                    'sample_2' => $sample2,
                 ]
             ],
             'notes' => ['Application fetched successfully']
