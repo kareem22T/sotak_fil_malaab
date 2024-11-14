@@ -130,6 +130,9 @@ class ApplicationController extends Controller
 
         $application = Application::with(['rates.user', 'user'])->where('user_id', $request->user()->id)->first();
 
+        $sample1->thumbnail = asset('storage/' . $sample1->thumbnail);
+        $sample2->thumbnail = asset('storage/' . $sample2->thumbnail);
+
         $data = [
             "sample_1" => ($application?->video_1 && $application) ? null : $sample1,
             "sample_2" => ($application?->video_2  && $application) ?  null : $sample2

@@ -26,6 +26,8 @@ class SampleResource extends Resource
             ->schema([
                 Forms\Components\FileUpload::make('video')
                     ->default(null),
+                Forms\Components\FileUpload::make('thumbnail')
+                    ->default(null),
                 Forms\Components\TextInput::make('title')
                     ->maxLength(255)
                     ->default(null),
@@ -42,6 +44,8 @@ class SampleResource extends Resource
     {
         return $table
         ->columns([
+                Tables\Columns\ImageColumn::make('thumbnail')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('title')
