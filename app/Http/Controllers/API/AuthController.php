@@ -64,7 +64,7 @@ class AuthController extends Controller
         $msg_title = "تفضل رمز تفعيل بريدك الالكتروني";
         $msg_content = "<h1>رمز التاكيد هو <span style='color: blue'>" . $code . "</span></h1>";
 
-        $this->sendEmail($user->email, $msg_title, $msg_content);
+        // $this->sendEmail($user->email, $msg_title, $msg_content);
 
         $user->token = $token;
 
