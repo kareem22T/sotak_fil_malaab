@@ -111,11 +111,11 @@ class ApplicationController extends Controller
             if ($application->video_1 && $application->video_2)
                 return response()->json(['status' => true, 'msg' => 'Application exists', 'data' => "BOTH_UPLOADED"], 200);
             if ($application->video_1)
-                return response()->json(['status' => true, 'msg' => 'Application exists', 'data' => "VIDEO_1_UPLOADED"], 200);
+                return response()->json(['status' => false, 'msg' => 'Application exists', 'data' => "VIDEO_1_UPLOADED"], 200);
             if ($application->video_2)
-                return response()->json(['status' => true, 'msg' => 'Application exists', 'data' => "VIDEO_2_UPLOADED"], 200);
+                return response()->json(['status' => false, 'msg' => 'Application exists', 'data' => "VIDEO_2_UPLOADED"], 200);
 
-            return response()->json(['status' => true, 'msg' => 'videos not exists', 'data' => "No_VIDEOS"], 200);
+            return response()->json(['status' => false, 'msg' => 'videos not exists', 'data' => "No_VIDEOS"], 200);
         }
         return response()->json(['status' => false, 'msg' => 'Application not exists', 'data' => ""], 200);
 
