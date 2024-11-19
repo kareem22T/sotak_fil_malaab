@@ -235,7 +235,7 @@ class ApplicationController extends Controller
 
         foreach ($paginatedApplications as $application) {
             $applications[] = [
-                'id' => $application['id'],
+                'id' => "video1_" . $application['id'],
                 'rate' => $application['rate_video_1'],
                 'sample' => $application['sample_1'],
                 'video' => $application['video_1'],
@@ -243,7 +243,7 @@ class ApplicationController extends Controller
                 'name' => $application->name,
             ];
             $applications[] = [
-                'id' => $application['id'],
+                'id' => "video2_" . $application['id'],
                 'rate' => $application['rate_video_2'],
                 'sample' => $application['sample_2'],
                 'video' => $application['video_2'],
