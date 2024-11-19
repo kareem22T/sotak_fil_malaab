@@ -231,8 +231,27 @@ class ApplicationController extends Controller
         });
 
         $paginatedApplications = $applications->setCollection($applicationsWithAvgRate);
+        $applications = []; // Initialize an empty array
 
-        return response()->json(['status' => true, 'msg' => 'Applications fetched successfully', 'data' => ['applications' => $paginatedApplications], 'notes' => ['Applications fetched successfully']], 200);
+        foreach ($paginatedApplications as $application) {
+            $applications[] = [
+                'id' => $application['id'],
+                'rate' => $application['rate_video_1'],
+                'sample' => $application['sample_1'],
+                'video' => $application['video_1'],
+                'image' => !empty($application->user->photo) ? asset('storage/' . $application->user->photo) : null,
+                'name' => $application->name,
+            ];
+            $applications[] = [
+                'id' => $application['id'],
+                'rate' => $application['rate_video_2'],
+                'sample' => $application['sample_2'],
+                'video' => $application['video_2'],
+                'image' => !empty($application->user->photo) ? asset('storage/' . $application->user->photo) : null,
+                'name' => $application->name,
+            ];
+        }
+        return response()->json(['status' => true, 'msg' => 'Applications fetched successfully', 'data' => ['applications' => $applications], 'notes' => ['Applications fetched successfully']], 200);
     }
 
     public function getApplication($id)
