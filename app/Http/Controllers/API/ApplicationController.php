@@ -237,7 +237,7 @@ class ApplicationController extends Controller
             $applications[] = [
                 'id' => "video1_" . $application['id'],
                 'rate' => $application['rate_video_1'],
-                'sample' => $application['sample_1'],
+                'sample' => $application['sample_1']['video'],
                 'video' => $application['video_1'],
                 'image' => !empty($application['user']['photo']) ? asset('storage/' . $application['user']['photo']) : null,
                 'name' => $application['name'] ?? null,
@@ -245,7 +245,7 @@ class ApplicationController extends Controller
             $applications[] = [
                 'id' => "video2_" . $application['id'],
                 'rate' => $application['rate_video_2'],
-                'sample' => $application['sample_2'],
+                'sample' => $application['sample_2']['video'],
                 'video' => $application['video_2'],
                 'image' => !empty($application['user']['photo']) ? asset('storage/' . $application['user']['photo']) : null,
                 'name' => $application['name'] ?? null,
