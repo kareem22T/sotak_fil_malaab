@@ -187,6 +187,9 @@ class ApplicationController extends Controller
 
         $query = Application::query();
 
+        $query->where('video_1', '!=', null);
+        $query->where('video_2', '!=', null);
+
         $query->where('is_approved', true);
         $query->with('user');
 
