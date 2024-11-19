@@ -239,7 +239,7 @@ class ApplicationController extends Controller
                 'rate' => $application['rate_video_1'],
                 'sample' => $application['sample_1']['video'],
                 'video' => $application['video_1'],
-                'image' => !empty($application['user']['photo']) ? asset('storage/' . $application['user']['photo']) : null,
+                'image' => $application['image'],
                 'name' => $application['name'] ?? null,
             ];
             $applications[] = [
@@ -247,7 +247,7 @@ class ApplicationController extends Controller
                 'rate' => $application['rate_video_2'],
                 'sample' => $application['sample_2']['video'],
                 'video' => $application['video_2'],
-                'image' => !empty($application['user']['photo']) ? asset('storage/' . $application['user']['photo']) : null,
+                'image' => $application['image'],
                 'name' => $application['name'] ?? null,
             ];
         }
