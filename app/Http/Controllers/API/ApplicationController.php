@@ -213,7 +213,7 @@ class ApplicationController extends Controller
         }
 
 
-        $applications = $query->with('user')->paginate(20);
+        $applications = $query->paginate(20);
         $applicationsWithAvgRate = $applications->getCollection()->map(function ($application) use ($sample2, $sample1) {
             return [
                 'id' => $application->id,
@@ -240,7 +240,7 @@ class ApplicationController extends Controller
                 'sample' => $application['sample_1'],
                 'video' => $application['video_1'],
                 'image' => !empty($application['user']['photo']) ? asset('storage/' . $application['user']['photo']) : null,
-                'name' => $application['user']['name'],
+                'name' => $application['name'] ?? null,
             ];
             $applications[] = [
                 'id' => "video2_" . $application['id'],
@@ -248,7 +248,7 @@ class ApplicationController extends Controller
                 'sample' => $application['sample_2'],
                 'video' => $application['video_2'],
                 'image' => !empty($application['user']['photo']) ? asset('storage/' . $application['user']['photo']) : null,
-                'name' => $application['name'],
+                'name' => $application['name'] ?? null,
             ];
         }
         return response()->json(['status' => true, 'msg' => 'Applications fetched successfully', 'data' => ['applications' => $applications], 'notes' => ['Applications fetched successfully']], 200);
