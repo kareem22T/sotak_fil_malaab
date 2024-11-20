@@ -216,7 +216,7 @@ class ApplicationController extends Controller
         }
 
 
-        $applications = $query->paginate(20);
+        $applications = $query->paginate(3);
         $applicationsWithAvgRate = $applications->getCollection()->map(function ($application) use ($sample2, $sample1) {
             return [
                 'id' => $application->id,
