@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Controller;
 use App\Models\Application;
+use App\Models\Sample;
 use App\Traits\SendEmailTrait;
 use Carbon\Carbon;
 
@@ -107,6 +108,15 @@ class AuthController extends Controller
     public function profile(Request $request)
     {
         $application = Application::with(['rates.user', 'user'])->where('user_id', $request->user()->id)->first();
+        $sample1 = Sample::select('title', 'sub_title', 'description', 'video', 'thumbnail')->find(1);
+        $sample2 = Sample::select('title', 'sub_title', 'description', 'video', 'thumbnail')->find(2);
+
+        $sample1->video = asset('storage/' . $sample1->video);
+        $sample2->video = asset('storage/' . $sample2->video);
+
+
+        $sample1->thumbnail = asset('storage/' . $sample1->thumbnail);
+        $sample2->thumbnail = asset('storage/' . $sample2->thumbnail);
 
         $user = $request->user();
         // Get the full path of the photo
@@ -126,7 +136,7 @@ class AuthController extends Controller
             $user->rate_video_2 = $application->ratesForVideo('video_2')->sum('rate') ?? 0;
         }
 
-        return response()->json(['status' => true, 'msg' => 'User profile fetched', 'data' => ['user' => $user], 'notes' => ['User profile fetched']], 200);
+        return response()->json(['status' => true, 'msg' => 'User profile fetched', 'data' => ['user' => $user, 'samples' => ['sample_1' => $sample1, 'sample_2' => $sample2]], 'notes' => ['User profile fetched']], 200);
     }
 
     public function updateProfile(Request $request)
