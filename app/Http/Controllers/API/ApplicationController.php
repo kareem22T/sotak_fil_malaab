@@ -176,6 +176,8 @@ class ApplicationController extends Controller
 
     public function getApplications(Request $request)
     {
+        $userId = $request->user()->id; // Get the current user's ID
+
         $sample1 = Sample::select('title', 'sub_title', 'description', 'video', 'thumbnail')->find(1);
         $sample2 = Sample::select('title', 'sub_title', 'description', 'video', 'thumbnail')->find(2);
 
@@ -191,7 +193,9 @@ class ApplicationController extends Controller
         $query->where('video_2', '!=', null);
 
         $query->where('is_approved', true);
-        $query->with('user');
+        $query->with(['user', 'rates' => function ($query) use ($userId) {
+            $query->where('user_id', $userId);
+        }]);
 
         if ($request->has('sort')) {
             if ($request->sort === 'most_rated') {
@@ -215,9 +219,11 @@ class ApplicationController extends Controller
             }
         }
 
-
         $applications = $query->paginate(3);
-        $applicationsWithAvgRate = $applications->getCollection()->map(function ($application) use ($sample2, $sample1) {
+        $applicationsWithAvgRate = $applications->getCollection()->map(function ($application) use ($sample2, $sample1, $userId) {
+            $video1Rated = $application->rates->where('video', 'video_1')->isNotEmpty();
+            $video2Rated = $application->rates->where('video', 'video_2')->isNotEmpty();
+
             return [
                 'id' => $application->id,
                 'name' => $application->name,
@@ -227,10 +233,12 @@ class ApplicationController extends Controller
                 'rate' => $application->rates->sum('rate'),
                 'rate_video_1' => $application->ratesForVideo('video_1')->sum('rate') ?? 0,
                 'rate_video_2' => $application->ratesForVideo('video_2')->sum('rate') ?? 0,
+                'is_rated_video_1' => $video1Rated,
+                'is_rated_video_2' => $video2Rated,
                 'created_at' => $application->created_at,
                 'sample_1' => $sample1,
                 'sample_2' => $sample2,
-        ];
+            ];
         });
 
         $paginatedApplications = $applications->setCollection($applicationsWithAvgRate);
@@ -240,6 +248,7 @@ class ApplicationController extends Controller
             $applications[] = [
                 'id' => "video1_" . $application['id'],
                 'rate' => $application['rate_video_1'],
+                'is_rated' => $application['is_rated_video_1'], // Include is_rated
                 'sample' => $application['sample_1']['video'],
                 'video' => $application['video_1'],
                 'image' => $application['image'],
@@ -248,12 +257,14 @@ class ApplicationController extends Controller
             $applications[] = [
                 'id' => "video2_" . $application['id'],
                 'rate' => $application['rate_video_2'],
+                'is_rated' => $application['is_rated_video_2'], // Include is_rated
                 'sample' => $application['sample_2']['video'],
                 'video' => $application['video_2'],
                 'image' => $application['image'],
                 'name' => $application['name'] ?? null,
             ];
         }
+
         return response()->json(['status' => true, 'msg' => 'Applications fetched successfully', 'data' => ['applications' => $applications], 'notes' => ['Applications fetched successfully']], 200);
     }
 
