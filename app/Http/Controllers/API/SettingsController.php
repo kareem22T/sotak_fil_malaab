@@ -21,7 +21,9 @@ class SettingsController extends Controller
 
         $settings->main_sponsor = asset('storage/' . $settings->main_sponsor);
         $settings->profile_ad = asset('storage/' . $settings->profile_ad);
-
+        if ($settings && $settings->ended_at) {
+            $settings->ended_at = Carbon::parse($settings->ended_at)->toDateString();
+        }
         return response()->json([
             'status' => true,
             'msg' => 'settings fetched successfully',
