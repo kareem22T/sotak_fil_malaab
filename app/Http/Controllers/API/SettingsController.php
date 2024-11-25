@@ -16,6 +16,7 @@ class SettingsController extends Controller
             'terms_and_condition',
             'about_us',
             'submission',
+            'ended_at',
         )->first();
 
         $settings->main_sponsor = asset('storage/' . $settings->main_sponsor);
