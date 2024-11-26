@@ -292,11 +292,21 @@ class ApplicationController extends Controller
             return response()->json(['status' => false, 'msg' => 'Video not found'], 404);
         }
 
+        $sample1 = Sample::select('title', 'sub_title', 'description', 'video', 'thumbnail')->find(1);
+        $sample2 = Sample::select('title', 'sub_title', 'description', 'video', 'thumbnail')->find(2);
+
+        $sample1->video = asset('storage/' . $sample1->video);
+        $sample2->video = asset('storage/' . $sample2->video);
+
+        $sample1->thumbnail = asset('storage/' . $sample1->thumbnail);
+        $sample2->thumbnail = asset('storage/' . $sample2->thumbnail);
+
         // Prepare response data
         $response = [
             'id' => $id,
             'name' => $application->name,
             'video' => $video,
+            'sample' => $videoKey == 'video_1' ? $sample1->video : $sample2->video,
             'image' => $application->user->photo ? asset('storage/' . $application->user->photo) : null,
             'rate' => $application->ratesForVideo($videoKey)->sum('rate') ?? 0,
             'created_at' => $application->created_at,
