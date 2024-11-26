@@ -102,7 +102,8 @@ class ApplicationController extends Controller
         return response()->json(['status' => true, 'msg' => 'video posted successfully', 'data' => ['application' => $application], 'notes' => ['Application completed successfully']], 201);
     }
 
-    public function checkIsApplicationExists(Request $request) {
+    public function checkIsApplicationExists(Request $request)
+    {
         $user = $request->user();
 
         $application = Application::where('user_id', $user->id)->first();
@@ -118,7 +119,6 @@ class ApplicationController extends Controller
             return response()->json(['status' => false, 'msg' => 'videos not exists', 'data' => "No_VIDEOS"], 200);
         }
         return response()->json(['status' => false, 'msg' => 'Application not exists', 'data' => ""], 200);
-
     }
 
     public function getSamples(Request $request)
@@ -268,6 +268,43 @@ class ApplicationController extends Controller
         return response()->json(['status' => true, 'msg' => 'Applications fetched successfully', 'data' => ['applications' => $applications], 'notes' => ['Applications fetched successfully']], 200);
     }
 
+    public function getVideoById($id)
+    {
+        // Split the ID to determine the video type and application ID
+        [$videoType, $applicationId] = explode('_', $id);
+
+        if (!in_array($videoType, ['video1', 'video2'])) {
+            return response()->json(['status' => false, 'msg' => 'Invalid video type'], 400);
+        }
+
+        // Find the application by ID
+        $application = Application::with('user')->find($applicationId);
+
+        if (!$application) {
+            return response()->json(['status' => false, 'msg' => 'Application not found'], 404);
+        }
+
+        // Determine which video to return
+        $videoKey = $videoType === 'video1' ? 'video_1' : 'video_2';
+        $video = $application->$videoKey ? asset('storage/' . $application->$videoKey) : null;
+
+        if (!$video) {
+            return response()->json(['status' => false, 'msg' => 'Video not found'], 404);
+        }
+
+        // Prepare response data
+        $response = [
+            'id' => $id,
+            'name' => $application->name,
+            'video' => $video,
+            'image' => $application->user->photo ? asset('storage/' . $application->user->photo) : null,
+            'rate' => $application->ratesForVideo($videoKey)->sum('rate') ?? 0,
+            'created_at' => $application->created_at,
+        ];
+
+        return response()->json(['status' => true, 'msg' => 'Video fetched successfully', 'data' => $response], 200);
+    }
+
     public function getApplication($id)
     {
         $sample1 = Sample::select('title', 'sub_title', 'description', 'video', 'thumbnail')->find(1);
@@ -295,7 +332,8 @@ class ApplicationController extends Controller
                     'video_1' => $application->video_1 ? asset('storage/' . $application->video_1) : $application->video_1,
                     'video_2' => $application->video_2 ? asset('storage/' . $application->video_2) : $application->video_2,
                     'rate_video_1' => $application->ratesForVideo('video_1')->sum('rate') ?? 0,
-                    'rate_video_2' => $application->ratesForVideo('video_2')->sum('rate') ?? 0,                    'created_at' => $application->created_at,
+                    'rate_video_2' => $application->ratesForVideo('video_2')->sum('rate') ?? 0,
+                    'created_at' => $application->created_at,
                     'sample_1' => $sample1,
                     'sample_2' => $sample2,
                 ]
@@ -343,7 +381,8 @@ class ApplicationController extends Controller
                     'user' => $application->user,
                     'rates' => $application->rates,
                     'rate_video_1' => $application->ratesForVideo('video_1')->sum('rate') ?? 0,
-                    'rate_video_2' => $application->ratesForVideo('video_2')->sum('rate') ?? 0,                    'created_at' => $application->created_at,
+                    'rate_video_2' => $application->ratesForVideo('video_2')->sum('rate') ?? 0,
+                    'created_at' => $application->created_at,
                     'updated_at' => $application->updated_at,
                     'sample_1' => $sample1,
                     'sample_2' => $sample2,
