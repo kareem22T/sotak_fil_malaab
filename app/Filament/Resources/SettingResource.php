@@ -32,6 +32,11 @@ class SettingResource extends Resource
                     ->default(null),
                 Forms\Components\FileUpload::make('profile_ad')
                     ->default(null),
+                Forms\Components\FileUpload::make('repeated_ad')
+                    ->default(null),
+                Forms\Components\TextInput::make('interval_of_repeat')
+                ->numeric()
+                    ->default(null),
                 Forms\Components\Textarea::make('terms_and_condition')
                     ->columnSpanFull(),
                 Forms\Components\Textarea::make('about_us')
