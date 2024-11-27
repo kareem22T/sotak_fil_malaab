@@ -255,6 +255,7 @@ class ApplicationController extends Controller
                 'video' => $application['video_1'],
                 'image' => $application['image'],
                 'name' => $application['name'] ?? null,
+                'ad_content' => null,
             ];
             $applications[] = [
                 'id' => "video2_" . $application['id'],
@@ -265,6 +266,7 @@ class ApplicationController extends Controller
                 'video' => $application['video_2'],
                 'image' => $application['image'],
                 'name' => $application['name'] ?? null,
+                'ad_content' => null,
             ];
         }
 
@@ -279,7 +281,14 @@ class ApplicationController extends Controller
             $result[] = $application;
             if (($index + 1) % $interval === 0) {
                 $result[] = [
+                    'id' => null,
+                    'rate' => null,
                     'is_ad' => true,
+                    'is_rated' => null,
+                    'sample' => null,
+                    'video' => null,
+                    'image' => null,
+                    'name' => null,
                     'ad_content' => $repeatedAd,
                 ];
             }
