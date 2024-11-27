@@ -6,6 +6,7 @@ use App\Models\Application;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Sample;
+use App\Models\Setting;
 use Illuminate\Support\Facades\Validator;
 
 class ApplicationController extends Controller
@@ -191,8 +192,8 @@ class ApplicationController extends Controller
 
         $query->where('video_1', '!=', null);
         $query->where('video_2', '!=', null);
-
         $query->where('is_approved', true);
+
         $query->with(['user', 'rates' => function ($query) use ($userId) {
             $query->where('user_id', $userId);
         }]);
@@ -248,7 +249,8 @@ class ApplicationController extends Controller
             $applications[] = [
                 'id' => "video1_" . $application['id'],
                 'rate' => $application['rate_video_1'],
-                'is_rated' => $application['is_rated_video_1'], // Include is_rated
+                'is_ad' => false,
+                'is_rated' => $application['is_rated_video_1'],
                 'sample' => $application['sample_1']['video'],
                 'video' => $application['video_1'],
                 'image' => $application['image'],
@@ -257,7 +259,8 @@ class ApplicationController extends Controller
             $applications[] = [
                 'id' => "video2_" . $application['id'],
                 'rate' => $application['rate_video_2'],
-                'is_rated' => $application['is_rated_video_2'], // Include is_rated
+                'is_ad' => false,
+                'is_rated' => $application['is_rated_video_2'],
                 'sample' => $application['sample_2']['video'],
                 'video' => $application['video_2'],
                 'image' => $application['image'],
@@ -265,10 +268,26 @@ class ApplicationController extends Controller
             ];
         }
 
-        return response()->json(['status' => true, 'msg' => 'Applications fetched successfully', 'data' => ['applications' => $applications], 'notes' => ['Applications fetched successfully']], 200);
-    }
+        // Fetch setting for repeated ad
+        $setting = Setting::select('interval_of_repeat', 'repeated_ad')->first();
+        $interval = $setting->interval_of_repeat ?? 5;
+        $repeatedAd = asset('storage/' . $setting->repeated_ad);
 
-    public function getVideoById($id)
+        // Insert repeated ads
+        $result = [];
+        foreach ($applications as $index => $application) {
+            $result[] = $application;
+            if (($index + 1) % $interval === 0) {
+                $result[] = [
+                    'is_ad' => true,
+                    'ad_content' => $repeatedAd,
+                ];
+            }
+        }
+
+        return response()->json(['status' => true, 'msg' => 'Applications fetched successfully', 'data' => ['applications' => $result], 'notes' => ['Applications fetched successfully']], 200);
+    }
+        public function getVideoById($id)
     {
         // Split the ID to determine the video type and application ID
         [$videoType, $applicationId] = explode('_', $id);
