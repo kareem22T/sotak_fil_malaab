@@ -13,5 +13,7 @@ class Setting extends Model
         'about_us',
         'submission',
         'ended_at',
+        'interval_of_repeat',
+        'repeated_ad',
     ];
 }
