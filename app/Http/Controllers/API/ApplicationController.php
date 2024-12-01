@@ -249,6 +249,7 @@ class ApplicationController extends Controller
             $applications[] = [
                 'id' => "video1_" . $application['id'],
                 'rate' => $application['rate_video_1'],
+                'total_rate' => $application['rate'],
                 'is_ad' => false,
                 'is_rated' => $application['is_rated_video_1'],
                 'sample' => $application['sample_1']['video'],
@@ -260,6 +261,7 @@ class ApplicationController extends Controller
             $applications[] = [
                 'id' => "video2_" . $application['id'],
                 'rate' => $application['rate_video_2'],
+                'total_rate' => $application['rate'],
                 'is_ad' => false,
                 'is_rated' => $application['is_rated_video_2'],
                 'sample' => $application['sample_2']['video'],
@@ -283,6 +285,7 @@ class ApplicationController extends Controller
                 $result[] = [
                     'id' => null,
                     'rate' => null,
+                    'total_rate' => null,
                     'is_ad' => true,
                     'is_rated' => null,
                     'sample' => null,
