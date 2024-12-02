@@ -15,6 +15,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('complete-data', [ApplicationController::class, 'postApplication'])->middleware(EnsureEmailIsVerified::class);
     Route::post('/applications/post-videos', [ApplicationController::class, 'postApplicationVideos'])->middleware(EnsureEmailIsVerified::class);
     Route::get('/reels/{reel_id}', [ApplicationController::class, 'getVideoById'])->middleware(EnsureEmailIsVerified::class);
+    Route::get('/sorted-applications', [ApplicationController::class, 'getApplicationsFUllNotAsReels'])->middleware(EnsureEmailIsVerified::class);
     Route::post('rate-application/{application}', [ApplicationController::class, 'rateApplication'])->middleware(EnsureEmailIsVerified::class);
     Route::get('get-application/{application}', [ApplicationController::class, 'getApplication']);
     Route::get('get-user-application', [ApplicationController::class, 'getUserApplication'])->middleware(EnsureEmailIsVerified::class);

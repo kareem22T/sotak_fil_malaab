@@ -299,6 +299,59 @@ class ApplicationController extends Controller
 
         return response()->json(['status' => true, 'msg' => 'Applications fetched successfully', 'data' => ['applications' => $result], 'notes' => ['Applications fetched successfully']], 200);
     }
+    public function getApplicationsFUllNotAsReels(Request $request)
+    {
+        $userId = $request->user()->id; // Get the current user's ID
+
+        $query = Application::query();
+
+        $query->where('video_1', '!=', null);
+        $query->where('video_2', '!=', null);
+        $query->where('is_approved', true);
+
+        $query->with(['user', 'rates' => function ($query) use ($userId) {
+            $query->where('user_id', $userId);
+        }]);
+
+        if ($request->has('sort')) {
+            if ($request->sort === 'most_rated') {
+                $query->select('applications.*')
+                    ->selectSub(function ($query) {
+                        $query->from('rates')
+                            ->whereColumn('applications.id', 'rates.application_id')
+                            ->selectRaw('SUM(rate)');
+                    }, 'rates_sum_rate')
+                    ->orderBy('rates_sum_rate', 'desc');
+            } elseif ($request->sort === 'lowest_rated') {
+                $query->select('applications.*')
+                    ->selectSub(function ($query) {
+                        $query->from('rates')
+                            ->whereColumn('applications.id', 'rates.application_id')
+                            ->selectRaw('MIN(rate)');
+                    }, 'lowest_rate')
+                    ->orderBy('lowest_rate', 'asc');
+            } elseif ($request->sort === 'latest') {
+                $query->orderBy('created_at', 'desc');
+            }
+        }
+
+        $applications = $query->paginate(10);
+        $applicationsWithAvgRate = $applications->getCollection()->map(function ($application) {
+            $video1Rated = $application->rates->where('video', 'video_1')->isNotEmpty();
+            $video2Rated = $application->rates->where('video', 'video_2')->isNotEmpty();
+
+            return [
+                'id' => $application->id,
+                'name' => $application->name,
+                'image' => !empty($application->user->photo) ? asset('storage/' . $application->user->photo) : null,
+                'rate' => $application->rates->sum('rate'),
+            ];
+        });
+
+        $paginatedApplications = $applications->setCollection($applicationsWithAvgRate);
+
+        return response()->json(['status' => true, 'msg' => 'Applications fetched successfully', 'data' => ['applications' => $paginatedApplications], 'notes' => ['Applications fetched successfully']], 200);
+    }
         public function getVideoById($id)
     {
         // Split the ID to determine the video type and application ID
