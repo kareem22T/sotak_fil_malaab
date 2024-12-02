@@ -344,7 +344,7 @@ class ApplicationController extends Controller
                 'id' => $application->id,
                 'name' => $application->name,
                 'image' => !empty($application->user->photo) ? asset('storage/' . $application->user->photo) : null,
-                'rate' => $application->rates->sum('rate'),
+                'rate' => (int) ($application->ratesForVideo('video_1')->sum('rate') ?? 0) + (int) ($application->ratesForVideo('video_2')->sum('rate') ?? 0),
             ];
         });
 
