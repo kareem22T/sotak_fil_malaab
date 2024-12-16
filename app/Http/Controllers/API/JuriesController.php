@@ -11,20 +11,23 @@ class JuriesController extends Controller
 {
     public function getAllJuries(Request $request)
     {
-        // Determine the language from the headers
-        $lang = $request->header('lang', 'ar'); // Default to 'ar' if no header is provided
 
-        // Fetch all juries
-        $juries = Jury::all();
+        $isEnglish = $request->header('lang') === 'en'; // Check if the header specifies English
+
+        // Fetch samples
+        $juries = Jury::select(
+            $isEnglish ? 'name_en as name' : 'name',
+            $isEnglish ? 'description_en as description' : 'description',
+            'video',
+            'thumbnail'
+        )->get();
+
 
         // Modify jury data based on the language
         foreach ($juries as $jury) {
-            $jury->name = $lang === 'en' ? $jury->name_en : $jury->name;
-            $jury->description = $lang === 'en' ? $jury->description_en : $jury->description;
-
-            // Keep the image URL intact
             $jury->image = asset('storage/' . $jury->image);
         }
+
 
         // Return the response
         return response()->json([
