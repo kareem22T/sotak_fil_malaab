@@ -10,6 +10,8 @@ class Jury extends Model
         'image',
         'name',
         'description',
+        'name_en',
+        'description_en',
     ];
 
 }

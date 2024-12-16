@@ -9,12 +9,15 @@ use Illuminate\Http\Request;
 
 class SettingsController extends Controller
 {
-    public function get() {
+    public function get(Request $request) {
+        $isEnglish = $request->header('lang') === 'en'; // Check if the header specifies English
+
+        // Fetch samples
         $settings = Setting::select(
+            $isEnglish ? 'terms_and_condition_en as terms_and_condition' : 'terms_and_condition',
+            $isEnglish ? 'about_us_en as about_us' : 'about_us',
             'main_sponsor',
             'profile_ad',
-            'terms_and_condition',
-            'about_us',
             'submission',
             'ended_at',
         )->first();

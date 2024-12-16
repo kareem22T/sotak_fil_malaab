@@ -34,6 +34,12 @@ class JuryResource extends Resource
                 Forms\Components\Textarea::make('description')
                     ->required()
                     ->columnSpanFull(),
+                Forms\Components\TextInput::make('name_en')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\Textarea::make('description_en')
+                    ->required()
+                    ->columnSpanFull(),
             ]);
     }
 

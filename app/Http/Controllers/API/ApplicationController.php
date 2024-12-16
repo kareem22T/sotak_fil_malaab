@@ -124,23 +124,47 @@ class ApplicationController extends Controller
 
     public function getSamples(Request $request)
     {
-        $sample1 = Sample::select('title', 'sub_title', 'description', 'video', 'thumbnail')->find(1);
-        $sample2 = Sample::select('title', 'sub_title', 'description', 'video', 'thumbnail')->find(2);
+        $isEnglish = $request->header('lang') === 'en'; // Check if the header specifies English
 
+        // Fetch samples
+        $sample1 = Sample::select(
+            $isEnglish ? 'title_en as title' : 'title',
+            $isEnglish ? 'sub_title_en as sub_title' : 'sub_title',
+            $isEnglish ? 'description_en as description' : 'description',
+            'video',
+            'thumbnail'
+        )->find(1);
+
+        $sample2 = Sample::select(
+            $isEnglish ? 'title_en as title' : 'title',
+            $isEnglish ? 'sub_title_en as sub_title' : 'sub_title',
+            $isEnglish ? 'description_en as description' : 'description',
+            'video',
+            'thumbnail'
+        )->find(2);
+
+        // Add storage paths
         $sample1->video = asset('storage/' . $sample1->video);
         $sample2->video = asset('storage/' . $sample2->video);
-
-        $application = Application::with(['rates.user', 'user'])->where('user_id', $request->user()->id)->first();
-
         $sample1->thumbnail = asset('storage/' . $sample1->thumbnail);
         $sample2->thumbnail = asset('storage/' . $sample2->thumbnail);
 
+        // Check if videos exist in the application
+        $application = Application::with(['rates.user', 'user'])
+            ->where('user_id', $request->user()->id)
+            ->first();
+
         $data = [
             "sample_1" => ($application?->video_1 && $application) ? null : $sample1,
-            "sample_2" => ($application?->video_2  && $application) ?  null : $sample2
+            "sample_2" => ($application?->video_2  && $application) ? null : $sample2,
         ];
 
-        return response()->json(['status' => true, 'msg' => 'Samples fetched successfully', 'data' => $data, 'notes' => ['samples got']], 201);
+        return response()->json([
+            'status' => true,
+            'msg' => 'Samples fetched successfully',
+            'data' => $data,
+            'notes' => ['samples got']
+        ], 201);
     }
 
     public function rateApplication(Request $request, Application $application)
@@ -178,26 +202,40 @@ class ApplicationController extends Controller
     public function getApplications(Request $request)
     {
         $userId = $request->user()->id; // Get the current user's ID
+        $isEnglish = $request->header('lang') === 'en'; // Check if the header specifies English
 
-        $sample1 = Sample::select('title', 'sub_title', 'description', 'video', 'thumbnail')->find(1);
-        $sample2 = Sample::select('title', 'sub_title', 'description', 'video', 'thumbnail')->find(2);
+        // Fetch samples
+        $sample1 = Sample::select(
+            $isEnglish ? 'title_en as title' : 'title',
+            $isEnglish ? 'sub_title_en as sub_title' : 'sub_title',
+            $isEnglish ? 'description_en as description' : 'description',
+            'video',
+            'thumbnail'
+        )->find(1);
 
+        $sample2 = Sample::select(
+            $isEnglish ? 'title_en as title' : 'title',
+            $isEnglish ? 'sub_title_en as sub_title' : 'sub_title',
+            $isEnglish ? 'description_en as description' : 'description',
+            'video',
+            'thumbnail'
+        )->find(2);
+
+        // Add storage paths
         $sample1->video = asset('storage/' . $sample1->video);
         $sample2->video = asset('storage/' . $sample2->video);
-
         $sample1->thumbnail = asset('storage/' . $sample1->thumbnail);
         $sample2->thumbnail = asset('storage/' . $sample2->thumbnail);
 
         $query = Application::query();
-
         $query->where('video_1', '!=', null);
         $query->where('video_2', '!=', null);
         $query->where('is_approved', true);
-
         $query->with(['user', 'rates' => function ($query) use ($userId) {
             $query->where('user_id', $userId);
         }]);
 
+        // Handle sorting
         if ($request->has('sort')) {
             if ($request->sort === 'most_rated') {
                 $query->select('applications.*')
@@ -220,6 +258,7 @@ class ApplicationController extends Controller
             }
         }
 
+        // Paginate and map results
         $applications = $query->paginate(3);
         $applicationsWithAvgRate = $applications->getCollection()->map(function ($application) use ($sample2, $sample1, $userId) {
             $video1Rated = $application->rates->where('video', 'video_1')->isNotEmpty();
@@ -237,68 +276,17 @@ class ApplicationController extends Controller
                 'is_rated_video_1' => $video1Rated,
                 'is_rated_video_2' => $video2Rated,
                 'created_at' => $application->created_at,
-                'sample_1' => $sample1,
-                'sample_2' => $sample2,
             ];
         });
 
-        $paginatedApplications = $applications->setCollection($applicationsWithAvgRate);
-        $applications = []; // Initialize an empty array
-
-        foreach ($paginatedApplications as $application) {
-            $applications[] = [
-                'id' => "video1_" . $application['id'],
-                'rate' => $application['rate_video_1'],
-                'total_rate' => (int) $application['rate_video_1'] + (int) $application['rate_video_2'],
-                'is_ad' => false,
-                'is_rated' => $application['is_rated_video_1'],
-                'sample' => $application['sample_1']['video'],
-                'video' => $application['video_1'],
-                'image' => $application['image'],
-                'name' => $application['name'] ?? null,
-                'ad_content' => null,
-            ];
-            $applications[] = [
-                'id' => "video2_" . $application['id'],
-                'rate' => $application['rate_video_2'],
-                'total_rate' => (int) $application['rate_video_1'] + (int) $application['rate_video_2'],
-                'is_ad' => false,
-                'is_rated' => $application['is_rated_video_2'],
-                'sample' => $application['sample_2']['video'],
-                'video' => $application['video_2'],
-                'image' => $application['image'],
-                'name' => $application['name'] ?? null,
-                'ad_content' => null,
-            ];
-        }
-
-        // Fetch setting for repeated ad
-        $setting = Setting::select('interval_of_repeat', 'repeated_ad')->first();
-        $interval = $setting->interval_of_repeat ?? 5;
-        $repeatedAd = asset('storage/' . $setting->repeated_ad);
-
-        // Insert repeated ads
-        $result = [];
-        foreach ($applications as $index => $application) {
-            $result[] = $application;
-            if (($index + 1) % $interval === 0) {
-                $result[] = [
-                    'id' => null,
-                    'rate' => null,
-                    'total_rate' => null,
-                    'is_ad' => true,
-                    'is_rated' => null,
-                    'sample' => null,
-                    'video' => null,
-                    'image' => null,
-                    'name' => null,
-                    'ad_content' => $repeatedAd,
-                ];
-            }
-        }
-
-        return response()->json(['status' => true, 'msg' => 'Applications fetched successfully', 'data' => ['applications' => $result], 'notes' => ['Applications fetched successfully']], 200);
+        return response()->json([
+            'status' => true,
+            'msg' => 'Applications fetched successfully',
+            'data' => $applicationsWithAvgRate,
+            'notes' => ['Applications fetched']
+        ], 200);
     }
+
     public function getApplicationsFUllNotAsReels(Request $request)
     {
         $userId = $request->user()->id; // Get the current user's ID
@@ -352,7 +340,7 @@ class ApplicationController extends Controller
 
         return response()->json(['status' => true, 'msg' => 'Applications fetched successfully', 'data' => ['applications' => $paginatedApplications], 'notes' => ['Applications fetched successfully']], 200);
     }
-        public function getVideoById($id)
+        public function getVideoById(Request $request, $id)
     {
         // Split the ID to determine the video type and application ID
         [$videoType, $applicationId] = explode('_', $id);
@@ -376,8 +364,24 @@ class ApplicationController extends Controller
             return response()->json(['status' => false, 'msg' => 'Video not found'], 404);
         }
 
-        $sample1 = Sample::select('title', 'sub_title', 'description', 'video', 'thumbnail')->find(1);
-        $sample2 = Sample::select('title', 'sub_title', 'description', 'video', 'thumbnail')->find(2);
+        $isEnglish = $request->header('lang') === 'en'; // Check if the header specifies English
+
+        // Fetch samples
+        $sample1 = Sample::select(
+            $isEnglish ? 'title_en as title' : 'title',
+            $isEnglish ? 'sub_title_en as sub_title' : 'sub_title',
+            $isEnglish ? 'description_en as description' : 'description',
+            'video',
+            'thumbnail'
+        )->find(1);
+
+        $sample2 = Sample::select(
+            $isEnglish ? 'title_en as title' : 'title',
+            $isEnglish ? 'sub_title_en as sub_title' : 'sub_title',
+            $isEnglish ? 'description_en as description' : 'description',
+            'video',
+            'thumbnail'
+        )->find(2);
 
         $sample1->video = asset('storage/' . $sample1->video);
         $sample2->video = asset('storage/' . $sample2->video);
@@ -399,10 +403,26 @@ class ApplicationController extends Controller
         return response()->json(['status' => true, 'msg' => 'Video fetched successfully', 'data' => $response], 200);
     }
 
-    public function getApplication($id)
+    public function getApplication(Request $request, $id)
     {
-        $sample1 = Sample::select('title', 'sub_title', 'description', 'video', 'thumbnail')->find(1);
-        $sample2 = Sample::select('title', 'sub_title', 'description', 'video', 'thumbnail')->find(2);
+        $isEnglish = $request->header('lang') === 'en'; // Check if the header specifies English
+
+        // Fetch samples
+        $sample1 = Sample::select(
+            $isEnglish ? 'title_en as title' : 'title',
+            $isEnglish ? 'sub_title_en as sub_title' : 'sub_title',
+            $isEnglish ? 'description_en as description' : 'description',
+            'video',
+            'thumbnail'
+        )->find(1);
+
+        $sample2 = Sample::select(
+            $isEnglish ? 'title_en as title' : 'title',
+            $isEnglish ? 'sub_title_en as sub_title' : 'sub_title',
+            $isEnglish ? 'description_en as description' : 'description',
+            'video',
+            'thumbnail'
+        )->find(2);
 
         $sample1->video = asset('storage/' . $sample1->video);
         $sample2->video = asset('storage/' . $sample2->video);
@@ -438,8 +458,24 @@ class ApplicationController extends Controller
 
     public function getUserApplication(Request $request)
     {
-        $sample1 = Sample::select('title', 'sub_title', 'description', 'video', 'thumbnail')->find(1);
-        $sample2 = Sample::select('title', 'sub_title', 'description', 'video', 'thumbnail')->find(2);
+        $isEnglish = $request->header('lang') === 'en'; // Check if the header specifies English
+
+        // Fetch samples
+        $sample1 = Sample::select(
+            $isEnglish ? 'title_en as title' : 'title',
+            $isEnglish ? 'sub_title_en as sub_title' : 'sub_title',
+            $isEnglish ? 'description_en as description' : 'description',
+            'video',
+            'thumbnail'
+        )->find(1);
+
+        $sample2 = Sample::select(
+            $isEnglish ? 'title_en as title' : 'title',
+            $isEnglish ? 'sub_title_en as sub_title' : 'sub_title',
+            $isEnglish ? 'description_en as description' : 'description',
+            'video',
+            'thumbnail'
+        )->find(2);
 
         $sample1->video = asset('storage/' . $sample1->video);
         $sample2->video = asset('storage/' . $sample2->video);

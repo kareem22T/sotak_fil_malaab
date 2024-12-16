@@ -37,6 +37,15 @@ class SampleResource extends Resource
                     ->columnSpanFull(),
                 Forms\Components\Textarea::make('description')
                     ->columnSpanFull(),
+                Forms\Components\TextInput::make('title_en')
+                    ->maxLength(255)
+                    ->default(null),
+                Forms\Components\TextInput::make('sub_title_en')
+                    ->maxLength(255)
+                    ->default(null)
+                    ->columnSpanFull(),
+                Forms\Components\Textarea::make('description_en')
+                    ->columnSpanFull(),
             ]);
     }
 

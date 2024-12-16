@@ -41,7 +41,9 @@ class SettingResource extends Resource
                     ->columnSpanFull(),
                 Forms\Components\Textarea::make('about_us')
                     ->columnSpanFull(),
-                Forms\Components\Textarea::make('registration_terms_and_conditions')
+                Forms\Components\Textarea::make('terms_and_condition_en')
+                    ->columnSpanFull(),
+                Forms\Components\Textarea::make('about_us_en')
                     ->columnSpanFull(),
                 Select::make('submission')
                     ->label('Open and close submission')
