@@ -18,8 +18,7 @@ class JuriesController extends Controller
         $juries = Jury::select(
             $isEnglish ? 'name_en as name' : 'name',
             $isEnglish ? 'description_en as description' : 'description',
-            'video',
-            'thumbnail'
+            'image'
         )->get();
 
 
